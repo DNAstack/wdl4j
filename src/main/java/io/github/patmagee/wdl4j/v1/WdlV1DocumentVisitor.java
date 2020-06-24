@@ -5,8 +5,8 @@ import io.github.patmagee.wdl4j.v1.expression.*;
 import io.github.patmagee.wdl4j.v1.expression.literal.*;
 import io.github.patmagee.wdl4j.v1.stdlib.WdlV1StandardLib;
 import io.github.patmagee.wdl4j.v1.typing.*;
-import org.openwdl.wdl.v1.parser.WdlParser;
-import org.openwdl.wdl.v1.parser.WdlParserBaseVisitor;
+import org.openwdl.wdl.v1.parser.WdlV1Parser;
+import org.openwdl.wdl.v1.parser.WdlV1ParserBaseVisitor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
+public class WdlV1DocumentVisitor extends WdlV1ParserBaseVisitor<WdlElement> {
 
     private AtomicInteger idCounter = new AtomicInteger(0);
 
@@ -22,87 +22,74 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
         return idCounter.addAndGet(1);
     }
 
-    private Expression visitExpr_infix0(WdlParser.Expr_infix0Context ctx) {
-        if (ctx instanceof WdlParser.LorContext) {
-            return visitLor((WdlParser.LorContext) ctx);
-        } else if (ctx instanceof WdlParser.Infix1Context) {
-            return (Expression) visitInfix1((WdlParser.Infix1Context) ctx);
+    private Expression visitExpr_infix0(WdlV1Parser.Expr_infix0Context ctx) {
+        if (ctx instanceof WdlV1Parser.LorContext) {
+            return visitLor((WdlV1Parser.LorContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.Infix1Context) {
+            return (Expression) visitInfix1((WdlV1Parser.Infix1Context) ctx);
         } else {
             return (Expression) visitChildren(ctx);
         }
     }
 
-    private Expression visitExpr_infix1(WdlParser.Expr_infix1Context ctx) {
-        if (ctx instanceof WdlParser.LandContext) {
-            return visitLand((WdlParser.LandContext) ctx);
-        } else if (ctx instanceof WdlParser.Infix2Context) {
-            return (Expression) visitInfix2((WdlParser.Infix2Context) ctx);
+    private Expression visitExpr_infix1(WdlV1Parser.Expr_infix1Context ctx) {
+        if (ctx instanceof WdlV1Parser.LandContext) {
+            return visitLand((WdlV1Parser.LandContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.Infix2Context) {
+            return (Expression) visitInfix2((WdlV1Parser.Infix2Context) ctx);
         } else {
             return (Expression) visitChildren(ctx);
         }
     }
 
-    private Expression visitExpr_infix2(WdlParser.Expr_infix2Context ctx) {
-        if (ctx instanceof WdlParser.EqeqContext) {
-            return visitEqeq((WdlParser.EqeqContext) ctx);
-        } else if (ctx instanceof WdlParser.GteContext) {
-            return visitGte((WdlParser.GteContext) ctx);
-        } else if (ctx instanceof WdlParser.GtContext) {
-            return visitGt((WdlParser.GtContext) ctx);
-        } else if (ctx instanceof WdlParser.LtContext) {
-            return visitLt((WdlParser.LtContext) ctx);
-        } else if (ctx instanceof WdlParser.LteContext) {
-            return visitLte((WdlParser.LteContext) ctx);
-        } else if (ctx instanceof WdlParser.Infix3Context) {
-            return (Expression) visitInfix3((WdlParser.Infix3Context) ctx);
-        } else if (ctx instanceof WdlParser.NeqContext) {
-            return visitNeq((WdlParser.NeqContext) ctx);
+    private Expression visitExpr_infix2(WdlV1Parser.Expr_infix2Context ctx) {
+        if (ctx instanceof WdlV1Parser.EqeqContext) {
+            return visitEqeq((WdlV1Parser.EqeqContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.GteContext) {
+            return visitGte((WdlV1Parser.GteContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.GtContext) {
+            return visitGt((WdlV1Parser.GtContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.LtContext) {
+            return visitLt((WdlV1Parser.LtContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.LteContext) {
+            return visitLte((WdlV1Parser.LteContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.Infix3Context) {
+            return (Expression) visitInfix3((WdlV1Parser.Infix3Context) ctx);
+        } else if (ctx instanceof WdlV1Parser.NeqContext) {
+            return visitNeq((WdlV1Parser.NeqContext) ctx);
         } else {
             return (Expression) visitChildren(ctx);
         }
     }
 
-    private Expression visitExpr_infix3(WdlParser.Expr_infix3Context ctx) {
-        if (ctx instanceof WdlParser.AddContext) {
-            return visitAdd((WdlParser.AddContext) ctx);
-        } else if (ctx instanceof WdlParser.SubContext) {
-            return visitSub((WdlParser.SubContext) ctx);
-        } else if (ctx instanceof WdlParser.Infix4Context) {
-            return (Expression) visitInfix4((WdlParser.Infix4Context) ctx);
+    private Expression visitExpr_infix3(WdlV1Parser.Expr_infix3Context ctx) {
+        if (ctx instanceof WdlV1Parser.AddContext) {
+            return visitAdd((WdlV1Parser.AddContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.SubContext) {
+            return visitSub((WdlV1Parser.SubContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.Infix4Context) {
+            return (Expression) visitInfix4((WdlV1Parser.Infix4Context) ctx);
         } else {
             return (Expression) visitChildren(ctx);
         }
     }
 
-    private Expression visitExpr_infix4(WdlParser.Expr_infix4Context ctx) {
-        if (ctx instanceof WdlParser.ModContext) {
-            return visitMod((WdlParser.ModContext) ctx);
-        } else if (ctx instanceof WdlParser.MulContext) {
-            return visitMul((WdlParser.MulContext) ctx);
-        } else if (ctx instanceof WdlParser.DivideContext) {
-            return visitDivide((WdlParser.DivideContext) ctx);
-        } else if (ctx instanceof WdlParser.Infix5Context) {
-            return (Expression) visitInfix5((WdlParser.Infix5Context) ctx);
+    private Expression visitExpr_infix4(WdlV1Parser.Expr_infix4Context ctx) {
+        if (ctx instanceof WdlV1Parser.ModContext) {
+            return visitMod((WdlV1Parser.ModContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.MulContext) {
+            return visitMul((WdlV1Parser.MulContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.DivideContext) {
+            return visitDivide((WdlV1Parser.DivideContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.Infix5Context) {
+            return (Expression) visitInfix5((WdlV1Parser.Infix5Context) ctx);
         } else {
             return (Expression) visitChildren(ctx);
         }
-    }
-
-    private Map<String, Expression> visitKeyValueConetxt(List<WdlParser.Meta_kvContext> ctx) {
-        Map<String, Expression> attributes = new HashMap<>();
-        if (ctx != null) {
-            for (int i = 0; i < ctx.size(); i++) {
-                WdlParser.Meta_kvContext kvContext = ctx.get(i);
-                String key = kvContext.Identifier().getText();
-                Expression value = visitExpr(kvContext.expr());
-                attributes.put(key, value);
-            }
-        }
-        return attributes;
     }
 
     @Override
-    public Type visitType_base(WdlParser.Type_baseContext ctx) {
+    public Type visitType_base(WdlV1Parser.Type_baseContext ctx) {
         if (ctx.BOOLEAN() != null) {
             return BooleanType.getType();
         } else if (ctx.STRING() != null) {
@@ -123,14 +110,14 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public MapType visitMap_type(WdlParser.Map_typeContext ctx) {
+    public MapType visitMap_type(WdlV1Parser.Map_typeContext ctx) {
         Type left = visitWdl_type(ctx.wdl_type(0));
         Type right = visitWdl_type(ctx.wdl_type(1));
         return MapType.getType(left, right);
     }
 
     @Override
-    public ArrayType visitArray_type(WdlParser.Array_typeContext ctx) {
+    public ArrayType visitArray_type(WdlV1Parser.Array_typeContext ctx) {
         Type innerType = visitWdl_type(ctx.wdl_type());
         boolean nonEmpty = ctx.PLUS() != null && ctx.PLUS().getText().equals("+");
         return ArrayType.getType(innerType, nonEmpty);
@@ -138,14 +125,14 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public PairType visitPair_type(WdlParser.Pair_typeContext ctx) {
+    public PairType visitPair_type(WdlV1Parser.Pair_typeContext ctx) {
         Type left = visitWdl_type(ctx.wdl_type(0));
         Type right = visitWdl_type(ctx.wdl_type(1));
         return PairType.getType(left, right);
     }
 
     @Override
-    public Type visitWdl_type(WdlParser.Wdl_typeContext ctx) {
+    public Type visitWdl_type(WdlV1Parser.Wdl_typeContext ctx) {
         Type type = (Type) super.visitWdl_type(ctx);
         if (ctx.OPTIONAL() != null) {
             return OptionalType.getType(type);
@@ -154,7 +141,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public Declaration visitUnbound_decls(WdlParser.Unbound_declsContext ctx) {
+    public Declaration visitUnbound_decls(WdlV1Parser.Unbound_declsContext ctx) {
         int id = getNextId();
         Type type = visitWdl_type(ctx.wdl_type());
         String name = ctx.Identifier().getText();
@@ -162,7 +149,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public Declaration visitBound_decls(WdlParser.Bound_declsContext ctx) {
+    public Declaration visitBound_decls(WdlV1Parser.Bound_declsContext ctx) {
         int id = getNextId();
         Type type = visitWdl_type(ctx.wdl_type());
         Expression expression = visitExpr(ctx.expr());
@@ -171,12 +158,12 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public Declaration visitAny_decls(WdlParser.Any_declsContext ctx) {
+    public Declaration visitAny_decls(WdlV1Parser.Any_declsContext ctx) {
         return (Declaration) super.visitAny_decls(ctx);
     }
 
     @Override
-    public Expression visitNumber(WdlParser.NumberContext ctx) {
+    public Expression visitNumber(WdlV1Parser.NumberContext ctx) {
         int id = getNextId();
         if (ctx.IntLiteral() != null) {
             return new IntLiteral(Integer.parseInt(ctx.IntLiteral().getText()), id);
@@ -186,7 +173,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public Expression visitExpression_placeholder_option(WdlParser.Expression_placeholder_optionContext ctx) {
+    public Expression visitExpression_placeholder_option(WdlV1Parser.Expression_placeholder_optionContext ctx) {
         int id = getNextId();
         Expression expression = null;
 
@@ -210,12 +197,12 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public StringLiteral.StringPart visitString_expr_part(WdlParser.String_expr_partContext ctx) {
+    public StringLiteral.StringPart visitString_expr_part(WdlV1Parser.String_expr_partContext ctx) {
         int id = getNextId();
         Expression expression = visitExpr(ctx.expr());
         List<Expression> placeholders = new ArrayList<>();
         if (ctx.expression_placeholder_option() != null) {
-            for (WdlParser.Expression_placeholder_optionContext placeholder : ctx.expression_placeholder_option()) {
+            for (WdlV1Parser.Expression_placeholder_optionContext placeholder : ctx.expression_placeholder_option()) {
                 placeholders.add(visitExpression_placeholder_option(placeholder));
             }
         }
@@ -223,14 +210,14 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public StringLiteral visitString(WdlParser.StringContext ctx) {
+    public StringLiteral visitString(WdlV1Parser.StringContext ctx) {
         int id = getNextId();
         List<StringLiteral.StringPart> stringParts = new ArrayList<>();
         if (ctx.string_part() != null) {
             stringParts.add(new StringLiteral.StringPart(ctx.string_part().getText(), getNextId()));
         }
         if (ctx.string_expr_with_string_part() != null) {
-            for (WdlParser.String_expr_with_string_partContext part : ctx.string_expr_with_string_part()) {
+            for (WdlV1Parser.String_expr_with_string_partContext part : ctx.string_expr_with_string_part()) {
                 stringParts.add(visitString_expr_part(part.string_expr_part()));
                 if (part.string_part() != null) {
                     stringParts.add(new StringLiteral.StringPart(part.string_part().getText(), getNextId()));
@@ -241,7 +228,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public Expression visitPrimitive_literal(WdlParser.Primitive_literalContext ctx) {
+    public Expression visitPrimitive_literal(WdlV1Parser.Primitive_literalContext ctx) {
         if (ctx.BoolLiteral() != null) {
             return new BooleanLiteral(Boolean.parseBoolean(ctx.BoolLiteral().getText()), getNextId());
         } else if (ctx.number() != null) {
@@ -254,12 +241,12 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public Expression visitExpr(WdlParser.ExprContext ctx) {
+    public Expression visitExpr(WdlV1Parser.ExprContext ctx) {
         return (Expression) super.visitExpr(ctx);
     }
 
     @Override
-    public BinaryExpression visitLor(WdlParser.LorContext ctx) {
+    public BinaryExpression visitLor(WdlV1Parser.LorContext ctx) {
         int id = getNextId();
         return new BinaryExpression(visitExpr_infix0(ctx.expr_infix0()),
                                     visitExpr_infix1(ctx.expr_infix1()),
@@ -268,7 +255,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public BinaryExpression visitLand(WdlParser.LandContext ctx) {
+    public BinaryExpression visitLand(WdlV1Parser.LandContext ctx) {
         int id = getNextId();
         return new BinaryExpression(visitExpr_infix1(ctx.expr_infix1()),
                                     visitExpr_infix2(ctx.expr_infix2()),
@@ -277,7 +264,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public BinaryExpression visitEqeq(WdlParser.EqeqContext ctx) {
+    public BinaryExpression visitEqeq(WdlV1Parser.EqeqContext ctx) {
         int id = getNextId();
         return new BinaryExpression(visitExpr_infix2(ctx.expr_infix2()),
                                     visitExpr_infix3(ctx.expr_infix3()),
@@ -286,7 +273,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public BinaryExpression visitLt(WdlParser.LtContext ctx) {
+    public BinaryExpression visitLt(WdlV1Parser.LtContext ctx) {
         int id = getNextId();
         return new BinaryExpression(visitExpr_infix2(ctx.expr_infix2()),
                                     visitExpr_infix3(ctx.expr_infix3()),
@@ -295,7 +282,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public BinaryExpression visitGte(WdlParser.GteContext ctx) {
+    public BinaryExpression visitGte(WdlV1Parser.GteContext ctx) {
         int id = getNextId();
         return new BinaryExpression(visitExpr_infix2(ctx.expr_infix2()),
                                     visitExpr_infix3(ctx.expr_infix3()),
@@ -304,7 +291,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public BinaryExpression visitNeq(WdlParser.NeqContext ctx) {
+    public BinaryExpression visitNeq(WdlV1Parser.NeqContext ctx) {
         int id = getNextId();
         return new BinaryExpression(visitExpr_infix2(ctx.expr_infix2()),
                                     visitExpr_infix3(ctx.expr_infix3()),
@@ -313,7 +300,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public BinaryExpression visitLte(WdlParser.LteContext ctx) {
+    public BinaryExpression visitLte(WdlV1Parser.LteContext ctx) {
         int id = getNextId();
         return new BinaryExpression(visitExpr_infix2(ctx.expr_infix2()),
                                     visitExpr_infix3(ctx.expr_infix3()),
@@ -322,7 +309,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public BinaryExpression visitGt(WdlParser.GtContext ctx) {
+    public BinaryExpression visitGt(WdlV1Parser.GtContext ctx) {
         int id = getNextId();
         return new BinaryExpression(visitExpr_infix2(ctx.expr_infix2()),
                                     visitExpr_infix3(ctx.expr_infix3()),
@@ -331,7 +318,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public BinaryExpression visitAdd(WdlParser.AddContext ctx) {
+    public BinaryExpression visitAdd(WdlV1Parser.AddContext ctx) {
         int id = getNextId();
         return new BinaryExpression(visitExpr_infix3(ctx.expr_infix3()),
                                     visitExpr_infix4(ctx.expr_infix4()),
@@ -340,7 +327,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public BinaryExpression visitSub(WdlParser.SubContext ctx) {
+    public BinaryExpression visitSub(WdlV1Parser.SubContext ctx) {
         int id = getNextId();
         return new BinaryExpression(visitExpr_infix3(ctx.expr_infix3()),
                                     visitExpr_infix4(ctx.expr_infix4()),
@@ -349,7 +336,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public BinaryExpression visitMod(WdlParser.ModContext ctx) {
+    public BinaryExpression visitMod(WdlV1Parser.ModContext ctx) {
         int id = getNextId();
         return new BinaryExpression(visitExpr_infix4(ctx.expr_infix4()),
                                     (Expression) visitExpr_infix5(ctx.expr_infix5()),
@@ -358,7 +345,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public BinaryExpression visitMul(WdlParser.MulContext ctx) {
+    public BinaryExpression visitMul(WdlV1Parser.MulContext ctx) {
         int id = getNextId();
         return new BinaryExpression(visitExpr_infix4(ctx.expr_infix4()),
                                     (Expression) visitExpr_infix5(ctx.expr_infix5()),
@@ -367,7 +354,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public BinaryExpression visitDivide(WdlParser.DivideContext ctx) {
+    public BinaryExpression visitDivide(WdlV1Parser.DivideContext ctx) {
         int id = getNextId();
         return new BinaryExpression(visitExpr_infix4(ctx.expr_infix4()),
                                     (Expression) visitExpr_infix5(ctx.expr_infix5()),
@@ -376,7 +363,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public PairLiteral visitPair_literal(WdlParser.Pair_literalContext ctx) {
+    public PairLiteral visitPair_literal(WdlV1Parser.Pair_literalContext ctx) {
         int id = getNextId();
         Expression left = visitExpr(ctx.expr(0));
         Expression right = visitExpr(ctx.expr(1));
@@ -384,12 +371,12 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public ApplyFunction visitApply(WdlParser.ApplyContext ctx) {
+    public ApplyFunction visitApply(WdlV1Parser.ApplyContext ctx) {
         int id = getNextId();
         String name = ctx.Identifier().getText();
         List<Expression> arguments = new ArrayList<>();
         if (ctx.expr() != null) {
-            for (WdlParser.ExprContext exprContext : ctx.expr()) {
+            for (WdlV1Parser.ExprContext exprContext : ctx.expr()) {
                 arguments.add(visitExpr(exprContext));
             }
         }
@@ -397,46 +384,36 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public Expression visitExpression_group(WdlParser.Expression_groupContext ctx) {
+    public Expression visitExpression_group(WdlV1Parser.Expression_groupContext ctx) {
         return visitExpr(ctx.expr());
     }
 
     @Override
-    public Expression visitPrimitives(WdlParser.PrimitivesContext ctx) {
+    public Expression visitPrimitives(WdlV1Parser.PrimitivesContext ctx) {
         return visitPrimitive_literal(ctx.primitive_literal());
     }
 
     @Override
-    public VariableReference visitLeft_name(WdlParser.Left_nameContext ctx) {
+    public VariableReference visitLeft_name(WdlV1Parser.Left_nameContext ctx) {
         int id = getNextId();
         return new VariableReference(ctx.Identifier().getText(), id);
     }
 
     @Override
-    public IndexedAccessor visitAt(WdlParser.AtContext ctx) {
+    public IndexedAccessor visitAt(WdlV1Parser.AtContext ctx) {
         int id = getNextId();
         return new IndexedAccessor((Expression) visitChildren(ctx.expr_core()), visitExpr(ctx.expr()), id);
     }
 
     @Override
-    public Negate visitNegate(WdlParser.NegateContext ctx) {
+    public Negate visitNegate(WdlV1Parser.NegateContext ctx) {
 
         int id = getNextId();
         return new Negate(visitExpr(ctx.expr()), id);
     }
 
     @Override
-    public Signed visitUnirarysigned(WdlParser.UnirarysignedContext ctx) {
-        int id = getNextId();
-        if (ctx.PLUS() != null) {
-            return new Signed(visitExpr(ctx.expr()), Signed.Operation.PLUS, id);
-        } else {
-            return new Signed(visitExpr(ctx.expr()), Signed.Operation.MINUS, id);
-        }
-    }
-
-    @Override
-    public MapLiteral visitMap_literal(WdlParser.Map_literalContext ctx) {
+    public MapLiteral visitMap_literal(WdlV1Parser.Map_literalContext ctx) {
         int id = getNextId();
         List<MapLiteral.MapEntry> entries = new ArrayList<>();
         if (ctx.expr() != null) {
@@ -452,7 +429,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public IfThenElse visitIfthenelse(WdlParser.IfthenelseContext ctx) {
+    public IfThenElse visitIfthenelse(WdlV1Parser.IfthenelseContext ctx) {
         int id = getNextId();
         Expression condition = visitExpr(ctx.expr(0));
         Expression ifTrue = visitExpr(ctx.expr(1));
@@ -462,13 +439,13 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public DotAccessor visitGet_name(WdlParser.Get_nameContext ctx) {
+    public DotAccessor visitGet_name(WdlV1Parser.Get_nameContext ctx) {
         int id = getNextId();
         return new DotAccessor((Expression) visitChildren(ctx.expr_core()), ctx.Identifier().getText(), id);
     }
 
     @Override
-    public ObjectLiteral visitObject_literal(WdlParser.Object_literalContext ctx) {
+    public ObjectLiteral visitObject_literal(WdlV1Parser.Object_literalContext ctx) {
         int id = getNextId();
         Map<String, Expression> values = new HashMap<>();
         if (!ctx.isEmpty()) {
@@ -480,7 +457,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public ArrayLiteral visitArray_literal(WdlParser.Array_literalContext ctx) {
+    public ArrayLiteral visitArray_literal(WdlV1Parser.Array_literalContext ctx) {
         int id = getNextId();
         List<Expression> values = new ArrayList<>();
         if (!ctx.isEmpty()) {
@@ -492,13 +469,13 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public Version visitVersion(WdlParser.VersionContext ctx) {
+    public Version visitVersion(WdlV1Parser.VersionContext ctx) {
         int id = getNextId();
-        return new Version(ctx.RELEASE_VERSION().getText(), id);
+        return new Version(ctx.VERSION().getText(), id);
     }
 
     @Override
-    public Import.ImportAlias visitImport_alias(WdlParser.Import_aliasContext ctx) {
+    public Import.ImportAlias visitImport_alias(WdlV1Parser.Import_aliasContext ctx) {
         int id = getNextId();
         String name = ctx.Identifier(0).getText();
         String alias = ctx.Identifier(1).getText();
@@ -506,7 +483,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public Import visitImport_doc(WdlParser.Import_docContext ctx) {
+    public Import visitImport_doc(WdlV1Parser.Import_docContext ctx) {
         int id = getNextId();
         String importUrl = ctx.string().getText();
         String name = null;
@@ -523,7 +500,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public Struct visitStruct(WdlParser.StructContext ctx) {
+    public Struct visitStruct(WdlV1Parser.StructContext ctx) {
         int id = getNextId();
         String name = ctx.Identifier().getText();
         List<Declaration> members = new ArrayList<>();
@@ -537,24 +514,69 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public ParameterMeta visitParameter_meta(WdlParser.Parameter_metaContext ctx) {
+    public ParameterMeta visitParameter_meta(WdlV1Parser.Parameter_metaContext ctx) {
         int id = getNextId();
-        return ParameterMeta.newBuilder().attributes(visitKeyValueConetxt(ctx.meta_kv())).id(id).build();
+        Map<String, Object> parameterMetaAttributes = new HashMap<>();
+        if (ctx.meta_kv() != null && !ctx.meta_kv().isEmpty()) {
+            for (WdlV1Parser.Meta_kvContext metaKv : ctx.meta_kv()) {
+                String key = metaKv.MetaIdentifier().getText();
+                Object value = visitMetaValue(metaKv.meta_value());
+                parameterMetaAttributes.put(key, value);
+            }
+        }
+        return ParameterMeta.newBuilder().attributes(parameterMetaAttributes).id(id).build();
     }
 
     @Override
-    public Meta visitMeta(WdlParser.MetaContext ctx) {
+    public Meta visitMeta(WdlV1Parser.MetaContext ctx) {
         int id = getNextId();
-        return Meta.newBuilder().attributes(visitKeyValueConetxt(ctx.meta_kv())).id(id).build();
+        Map<String, Object> metaAttributes = new HashMap<>();
+        if (ctx.meta_kv() != null && !ctx.meta_kv().isEmpty()) {
+            for (WdlV1Parser.Meta_kvContext metaKv : ctx.meta_kv()) {
+                String key = metaKv.MetaIdentifier().getText();
+                Object value = visitMetaValue(metaKv.meta_value());
+                metaAttributes.put(key, value);
+            }
+        }
+        return Meta.newBuilder().attributes(metaAttributes).id(id).build();
+    }
+
+    private Object visitMetaValue(WdlV1Parser.Meta_valueContext meta_valueContext) {
+        if (meta_valueContext.MetaBool() != null) {
+            return Boolean.parseBoolean(meta_valueContext.MetaBool().getText());
+        } else if (meta_valueContext.MetaFloat() != null) {
+            return Float.parseFloat(meta_valueContext.MetaFloat().getText());
+        } else if (meta_valueContext.MetaInt() != null) {
+            return Float.parseFloat(meta_valueContext.MetaInt().getText());
+        } else if (meta_valueContext.meta_string() != null) {
+            return meta_valueContext.meta_string().meta_string_part().getText();
+        } else if (meta_valueContext.meta_object() != null) {
+            WdlV1Parser.Meta_objectContext metaObject = meta_valueContext.meta_object();
+            Map<String, Object> metaMap = new HashMap<>();
+            for (WdlV1Parser.Meta_object_kvContext metaObjectKvContext : metaObject.meta_object_kv()) {
+                metaMap.put(metaObjectKvContext.MetaObjectIdentifier().getText(),
+                            visitMetaValue(metaObjectKvContext.meta_value()));
+            }
+            return metaMap;
+        } else if (meta_valueContext.meta_array() != null) {
+            WdlV1Parser.Meta_arrayContext metaArrayContext = meta_valueContext.meta_array();
+            List<Object> metaList = new ArrayList<>();
+            for (WdlV1Parser.Meta_valueContext metaValue : metaArrayContext.meta_value()) {
+                metaList.add(visitMetaValue(metaValue));
+            }
+            return metaList;
+        } else {
+            return null;
+        }
     }
 
     @Override
-    public Runtime visitTask_runtime(WdlParser.Task_runtimeContext ctx) {
+    public Runtime visitTask_runtime(WdlV1Parser.Task_runtimeContext ctx) {
         int id = getNextId();
         Map<String, Expression> attributes = new HashMap<>();
         if (ctx.task_runtime_kv() != null) {
             for (int i = 0; i < ctx.task_runtime_kv().size(); i++) {
-                WdlParser.Task_runtime_kvContext kvContext = ctx.task_runtime_kv(i);
+                WdlV1Parser.Task_runtime_kvContext kvContext = ctx.task_runtime_kv(i);
                 String key = kvContext.Identifier().getText();
                 Expression value = visitExpr(kvContext.expr());
                 attributes.put(key, value);
@@ -564,7 +586,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public Inputs visitTask_input(WdlParser.Task_inputContext ctx) {
+    public Inputs visitTask_input(WdlV1Parser.Task_inputContext ctx) {
         int id = getNextId();
         List<Declaration> declarations = new ArrayList<>();
         if (ctx.any_decls() != null) {
@@ -576,7 +598,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public Outputs visitTask_output(WdlParser.Task_outputContext ctx) {
+    public Outputs visitTask_output(WdlV1Parser.Task_outputContext ctx) {
         int id = getNextId();
         List<Declaration> declarations = new ArrayList<>();
         if (ctx.bound_decls() != null) {
@@ -588,12 +610,12 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public Command.CommandPart visitTask_command_expr_part(WdlParser.Task_command_expr_partContext ctx) {
+    public Command.CommandPart visitTask_command_expr_part(WdlV1Parser.Task_command_expr_partContext ctx) {
         int id = getNextId();
         Expression expression = visitExpr(ctx.expr());
         List<Expression> placeholders = new ArrayList<>();
         if (ctx.expression_placeholder_option() != null) {
-            for (WdlParser.Expression_placeholder_optionContext placeholder : ctx.expression_placeholder_option()) {
+            for (WdlV1Parser.Expression_placeholder_optionContext placeholder : ctx.expression_placeholder_option()) {
                 placeholders.add(visitExpression_placeholder_option(placeholder));
             }
         }
@@ -601,14 +623,14 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public Command visitTask_command(WdlParser.Task_commandContext ctx) {
+    public Command visitTask_command(WdlV1Parser.Task_commandContext ctx) {
         int id = getNextId();
         List<Command.CommandPart> commandParts = new ArrayList<>();
         if (ctx.task_command_string_part() != null) {
             commandParts.add(new Command.CommandPart(ctx.task_command_string_part().getText(), id));
         }
         if (ctx.task_command_expr_with_string() != null) {
-            for (WdlParser.Task_command_expr_with_stringContext part : ctx.task_command_expr_with_string()) {
+            for (WdlV1Parser.Task_command_expr_with_stringContext part : ctx.task_command_expr_with_string()) {
                 commandParts.add(visitTask_command_expr_part(part.task_command_expr_part()));
                 if (part.task_command_string_part() != null) {
                     commandParts.add(new Command.CommandPart(part.task_command_string_part().getText(), getNextId()));
@@ -619,12 +641,12 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public WdlElement visitTask_element(WdlParser.Task_elementContext ctx) {
+    public WdlElement visitTask_element(WdlV1Parser.Task_elementContext ctx) {
         return super.visitTask_element(ctx);
     }
 
     @Override
-    public Task visitTask(WdlParser.TaskContext ctx) {
+    public Task visitTask(WdlV1Parser.TaskContext ctx) {
         int id = getNextId();
         String name = ctx.Identifier().getText();
         List<Declaration> declarations = new ArrayList<>();
@@ -635,10 +657,10 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
         Meta meta = null;
         Command command = null;
 
-        List<WdlParser.Task_elementContext> elements = ctx.task_element();
+        List<WdlV1Parser.Task_elementContext> elements = ctx.task_element();
         if (elements != null) {
             for (int i = 0; i < elements.size(); i++) {
-                WdlParser.Task_elementContext element = elements.get(i);
+                WdlV1Parser.Task_elementContext element = elements.get(i);
                 if (element.bound_decls() != null) {
                     declarations.add(visitBound_decls(element.bound_decls()));
                 } else if (element.task_input() != null) {
@@ -670,16 +692,16 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public Call visitCall(WdlParser.CallContext ctx) {
+    public Call visitCall(WdlV1Parser.CallContext ctx) {
         int id = getNextId();
-        String name = ctx.Identifier().getText();
+        String name = ctx.call_name().getText();
         String alias = ctx.call_alias() != null ? ctx.call_alias().Identifier().getText() : null;
         Map<String, Expression> inputs = new HashMap<>();
         if (ctx.call_body() != null && ctx.call_body().call_inputs() != null) {
-            WdlParser.Call_inputsContext callInputs = ctx.call_body().call_inputs();
+            WdlV1Parser.Call_inputsContext callInputs = ctx.call_body().call_inputs();
             if (callInputs.call_input() != null) {
                 for (int i = 0; i < callInputs.call_input().size(); i++) {
-                    WdlParser.Call_inputContext callInput = callInputs.call_input(i);
+                    WdlV1Parser.Call_inputContext callInput = callInputs.call_input(i);
                     String inputName = callInput.Identifier().getText();
                     Expression inputValue = visitExpr(callInput.expr());
                     inputs.put(inputName, inputValue);
@@ -690,7 +712,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public Scatter visitScatter(WdlParser.ScatterContext ctx) {
+    public Scatter visitScatter(WdlV1Parser.ScatterContext ctx) {
         int id = getNextId();
         Scatter scatter = new Scatter();
         scatter.setId(id);
@@ -712,7 +734,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public Conditional visitConditional(WdlParser.ConditionalContext ctx) {
+    public Conditional visitConditional(WdlV1Parser.ConditionalContext ctx) {
         int id = getNextId();
         Conditional conditional = new Conditional();
         conditional.setExpression(visitExpr(ctx.expr()));
@@ -733,7 +755,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public Inputs visitWorkflow_input(WdlParser.Workflow_inputContext ctx) {
+    public Inputs visitWorkflow_input(WdlV1Parser.Workflow_inputContext ctx) {
         int id = getNextId();
         List<Declaration> declarations = new ArrayList<>();
         if (ctx.any_decls() != null) {
@@ -745,7 +767,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public Outputs visitWorkflow_output(WdlParser.Workflow_outputContext ctx) {
+    public Outputs visitWorkflow_output(WdlV1Parser.Workflow_outputContext ctx) {
         int id = getNextId();
         List<Declaration> declarations = new ArrayList<>();
         if (ctx.bound_decls() != null) {
@@ -757,27 +779,27 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public Inputs visitInput(WdlParser.InputContext ctx) {
+    public Inputs visitInput(WdlV1Parser.InputContext ctx) {
         return visitWorkflow_input(ctx.workflow_input());
     }
 
     @Override
-    public Outputs visitOutput(WdlParser.OutputContext ctx) {
+    public Outputs visitOutput(WdlV1Parser.OutputContext ctx) {
         return visitWorkflow_output(ctx.workflow_output());
     }
 
     @Override
-    public Meta visitMeta_element(WdlParser.Meta_elementContext ctx) {
+    public Meta visitMeta_element(WdlV1Parser.Meta_elementContext ctx) {
         return visitMeta(ctx.meta());
     }
 
     @Override
-    public ParameterMeta visitParameter_meta_element(WdlParser.Parameter_meta_elementContext ctx) {
+    public ParameterMeta visitParameter_meta_element(WdlV1Parser.Parameter_meta_elementContext ctx) {
         return visitParameter_meta(ctx.parameter_meta());
     }
 
     @Override
-    public Workflow visitWorkflow(WdlParser.WorkflowContext ctx) {
+    public Workflow visitWorkflow(WdlV1Parser.WorkflowContext ctx) {
         int id = getNextId();
         Workflow workflow = new Workflow();
         workflow.setName(ctx.Identifier().getText());
@@ -787,7 +809,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
         Meta meta = null;
         List<WdlElement> elements = new ArrayList<>();
 
-        for (WdlParser.Workflow_elementContext elementContext : ctx.workflow_element()) {
+        for (WdlV1Parser.Workflow_elementContext elementContext : ctx.workflow_element()) {
             WdlElement element = visitChildren(elementContext);
             if (element instanceof Inputs) {
                 inputs = (Inputs) element;
@@ -812,12 +834,12 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
     }
 
     @Override
-    public WdlElement visitDocument_element(WdlParser.Document_elementContext ctx) {
+    public WdlElement visitDocument_element(WdlV1Parser.Document_elementContext ctx) {
         return super.visitDocument_element(ctx);
     }
 
     @Override
-    public Document visitDocument(WdlParser.DocumentContext ctx) {
+    public Document visitDocument(WdlV1Parser.DocumentContext ctx) {
         int id = getNextId();
         Document document = new Document();
         document.setVersion(visitVersion(ctx.version()));
@@ -830,7 +852,7 @@ public class WdlV1DocumentVisitor extends WdlParserBaseVisitor<WdlElement> {
 
         document.setWorkflow(workflow);
 
-        for (WdlParser.Document_elementContext elementContext : ctx.document_element()) {
+        for (WdlV1Parser.Document_elementContext elementContext : ctx.document_element()) {
             WdlElement element = visitChildren(elementContext);
             if (element instanceof Import) {
                 imports.add((Import) element);

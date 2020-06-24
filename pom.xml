@@ -78,8 +78,8 @@
                         <argument>-visitor</argument>
                     </arguments>
                     <includes>
-                        <include>WdlLexer.g4</include>
-                        <include>WdlParser.g4</include>
+                        <include>WdlV1Lexer.g4</include>
+                        <include>WdlV1Parser.g4</include>
                     </includes>
                     <visitor>true</visitor>
                     <listener>true</listener>

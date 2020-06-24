@@ -11,8 +11,8 @@ import io.github.patmagee.wdl4j.v1.util.UriUtils;
 import org.antlr.v4.runtime.CodePointBuffer;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.openwdl.wdl.v1.parser.WdlLexer;
-import org.openwdl.wdl.v1.parser.WdlParser;
+import org.openwdl.wdl.v1.parser.WdlV1Lexer;
+import org.openwdl.wdl.v1.parser.WdlV1Parser;
 
 import java.io.IOException;
 import java.net.URI;
@@ -56,7 +56,7 @@ public class WdlV1DocumentFactory {
         throw new WdlResolutionException("Could not resolve WDL", lastException);
     }
 
-    private Document parseWdlIntoDocument(WdlParser parser, URI context) {
+    private Document parseWdlIntoDocument(WdlV1Parser parser, URI context) {
         WdlAggregatingErrorListener errorListener = new WdlAggregatingErrorListener(context);
         try {
             parser.removeErrorListeners();
@@ -78,10 +78,10 @@ public class WdlV1DocumentFactory {
         }
     }
 
-    private WdlParser getParser(String inp) {
+    private WdlV1Parser getParser(String inp) {
         CodePointBuffer codePointBuffer = CodePointBuffer.withBytes(ByteBuffer.wrap(inp.getBytes()));
-        WdlLexer lexer = new WdlLexer(CodePointCharStream.fromBuffer(codePointBuffer));
-        return new WdlParser(new CommonTokenStream(lexer));
+        WdlV1Lexer lexer = new WdlV1Lexer(CodePointCharStream.fromBuffer(codePointBuffer));
+        return new WdlV1Parser(new CommonTokenStream(lexer));
     }
 
     public void setWdlResolvers(List<WdlResolver> wdlResolvers) {
@@ -94,13 +94,13 @@ public class WdlV1DocumentFactory {
     }
 
     public Document create(String wdl) throws IOException {
-        WdlParser parser = getParser(wdl);
+        WdlV1Parser parser = getParser(wdl);
         return parseWdlIntoDocument(parser, null);
     }
 
     public Document create(URI wdlPath) throws IOException {
         String resolvedWdl = resolveWdlToString(wdlPath, null);
-        WdlParser parser = getParser(resolvedWdl);
+        WdlV1Parser parser = getParser(resolvedWdl);
         return parseWdlIntoDocument(parser, wdlPath);
 
     }

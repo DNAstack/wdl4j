@@ -12,7 +12,7 @@ import java.util.Map;
 @Builder(builderMethodName = "newBuilder")
 public class Meta implements WdlElement {
 
-    private Map<String, Expression> attributes;
+    private Map<String, Object> attributes;
     @NonNull
     private int id;
 
