@@ -1,6 +1,6 @@
 package com.dnastack.wdl4j.util;
 
-import com.dnastack.wdl4j.exception.NamespaceException;
+import com.dnastack.wdl4j.lib.exception.NamespaceException;
 
 import java.io.File;
 import java.net.URI;

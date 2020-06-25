@@ -70,17 +70,13 @@
                 <artifactId>antlr4-maven-plugin</artifactId>
                 <version>${antlr.version}</version>
                 <configuration>
-                    <outputDirectory>${project.build.directory}/generated-sources/antlr4/org/openwdl/wdl/v1/parser</outputDirectory>
+                    <outputDirectory>${project.build.directory}/generated-sources/antlr4/org/openwdl/wdl/parser</outputDirectory>
                     <arguments>
                         <argument>-package</argument>
-                        <argument>org.openwdl.wdl.v1.parser</argument>
+                        <argument>org.openwdl.wdl.parser</argument>
                         <argument>-listener</argument>
                         <argument>-visitor</argument>
                     </arguments>
-                    <includes>
-                        <include>WdlV1Lexer.g4</include>
-                        <include>WdlV1Parser.g4</include>
-                    </includes>
                     <visitor>true</visitor>
                     <listener>true</listener>
                 </configuration>

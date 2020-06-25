@@ -1,9 +1,7 @@
 package com.dnastack.wdl4j;
 
-import com.dnastack.wdl4j.Document;
-import com.dnastack.wdl4j.WdlV1DocumentFactory;
-import com.dnastack.wdl4j.exception.NamespaceException;
-import jdk.nashorn.internal.ir.annotations.Ignore;
+import com.dnastack.wdl4j.lib.Document;
+import com.dnastack.wdl4j.lib.exception.NamespaceException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +20,7 @@ class WdlDocumentFactoryTest {
     public void testParsingWdlString() throws IOException {
         String wdl = "version 1.0 workflow a { input { String p = 'Happy are those ~{1 + 2}'} }";
 
-        WdlV1DocumentFactory documentFactory = new WdlV1DocumentFactory();
+        WdlDocumentFactory documentFactory = new WdlDocumentFactory();
         Document document = documentFactory.create(wdl);
         Assertions.assertEquals("1.0", document.getVersion().getRelease());
         Assertions.assertEquals("a", document.getWorkflow().getName());
@@ -36,7 +34,7 @@ class WdlDocumentFactoryTest {
         BufferedWriter bw = new BufferedWriter(new FileWriter(wdlFile));
         bw.write(wdl);
         bw.close();
-        WdlV1DocumentFactory documentFactory = new WdlV1DocumentFactory();
+        WdlDocumentFactory documentFactory = new WdlDocumentFactory();
         Document document = documentFactory.create(wdlFile.toURI());
         Assertions.assertEquals("1.0", document.getVersion().getRelease());
         Assertions.assertEquals("a", document.getWorkflow().getName());
@@ -47,12 +45,11 @@ class WdlDocumentFactoryTest {
     public void test3() throws IOException {
         URI url = URI.create(
                 "https://raw.githubusercontent.com/openwdl/Testathon-2020/master/pytest-wdl-tests/tests/task/add2/main.wdl");
-        WdlV1DocumentFactory documentFactory = new WdlV1DocumentFactory();
+        WdlDocumentFactory documentFactory = new WdlDocumentFactory();
         Document document = documentFactory.create(url);
         Assertions.assertNotNull(document.getVersion());
     }
 
-    @Ignore
     @Test
     public void testImportsResolveFromLocalFiles() throws IOException, NamespaceException {
         String wdl = "version 1.0 import \"file2.wdl\" as file2 workflow a { input {String p = 'Happy are those ~{1 + 2}'} }";
@@ -63,7 +60,7 @@ class WdlDocumentFactoryTest {
         Files.write(wdl1Path, wdl.getBytes());
         Files.write(wdl2Path, wdl2.getBytes());
 
-        WdlV1DocumentFactory documentFactory = new WdlV1DocumentFactory();
+        WdlDocumentFactory documentFactory = new WdlDocumentFactory();
         Document document = documentFactory.createAndImport(wdl1Path.toUri());
         Assertions.assertEquals("1.0", document.getVersion().getRelease());
         Assertions.assertNotNull(document.getImportedDocuments());
