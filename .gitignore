@@ -1,5 +1,6 @@
 # Antlr files
 *.tokens
+gen/
 
 # Compiled class file
 *.class
