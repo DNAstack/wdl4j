@@ -17,7 +17,7 @@
 1. Clone this repository
 
 ```shell script
-git clone http://github.com/patmagee/wdl4j.gi .
+git clone http://github.com/dnastack/wdl4j.git .
 cd wdl4j
 ```
 
@@ -31,19 +31,4 @@ cd wdl4j
 ```shell script
 ./mvwn test
 ```
-
-
-### Basic Usage
-
-The simplest way to convert a WDL String into a Document is to use the WdlV1DocumentFactory.
-
-```java
-
-String wdl = "version 1.0\n workflow main { }";
-WdlV1DocumentFactory documentFactory = new WdlV1DocumentFactory();
-Document wdlDocument = documentFactory.create(wdl);
-
-
-``` 
-
 

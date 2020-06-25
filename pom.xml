@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
 
-    <groupId>patmagee.github.io</groupId>
+    <groupId>com.dnastack</groupId>
     <artifactId>wdl4j</artifactId>
     <name>WDL4J</name>
     <version>1.0-SNAPSHOT</version>
