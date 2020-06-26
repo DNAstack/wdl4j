@@ -18,7 +18,6 @@ public class Scatter implements WorkflowElement {
 
     @NonNull
     private Expression expression;
-    private List<Declaration> declarations;
     private List<WdlElement> workflowElements;
     @NonNull
     private int id;

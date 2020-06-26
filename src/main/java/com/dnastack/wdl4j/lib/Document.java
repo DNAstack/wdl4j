@@ -44,20 +44,24 @@ public class Document implements WdlElement {
             }
         }
 
-        Namespace namespace = captureNamespace();
-        if (workflow != null) {
-            workflow.typeCheck(namespace);
-        }
 
+        Namespace namespace = captureNamespace();
         if (tasks != null) {
             for (Task task : tasks) {
                 task.typeCheck(namespace);
             }
         }
+
+        if (workflow != null) {
+            workflow.typeCheck(namespace);
+        }
+
+
     }
 
     private Namespace captureNamespace() throws NamespaceException {
         Namespace namespace = new Namespace();
+        namespace.setLanguageLevel(languageLevel);
         namespace.setLib(lib);
         if (importedDocuments != null) {
             for (Map.Entry<String, Document> entry : importedDocuments.entrySet()) {
@@ -67,7 +71,7 @@ public class Document implements WdlElement {
             }
         }
 
-        if (structs != null) {
+        if (structs != null && !languageLevel.equals(LanguageLevel.WDL_DRAFT_2) ) {
             for (Struct struct : structs) {
                 namespace.addStruct(struct);
             }
@@ -79,6 +83,7 @@ public class Document implements WdlElement {
 
         if (tasks != null) {
             for (Task task : tasks) {
+                namespace.addTask(task);
                 captureTaskNamespace(namespace, task);
             }
         }
@@ -96,6 +101,7 @@ public class Document implements WdlElement {
 
     private void captureTaskNamespace(Namespace currentNamespace, Task task) throws NamespaceException {
         Namespace taskNamespace = new Namespace();
+        taskNamespace.setLanguageLevel(languageLevel);
         if (task.getInputs() != null && task.getInputs().getDeclarations() != null) {
             for (Declaration inputDecl : task.getInputs().getDeclarations()) {
                 if (inputDecl.getDeclType() instanceof StructType) {
@@ -114,11 +120,13 @@ public class Document implements WdlElement {
             }
         }
 
+
         currentNamespace.addChildNamespace(task.getName(), taskNamespace);
     }
 
     private void captureWorfklowNamespace(Namespace currentNamespace) throws NamespaceException {
         Namespace workflowNamespace = new Namespace();
+        workflowNamespace.setLanguageLevel(languageLevel);
         if (workflow.getInputs() != null && workflow.getInputs().getDeclarations() != null) {
             for (Declaration inputDecl : workflow.getInputs().getDeclarations()) {
                 if (inputDecl.getDeclType() instanceof StructType) {
