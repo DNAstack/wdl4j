@@ -15,7 +15,7 @@ public class AnyType extends Type {
     }
 
     @Override
-    public boolean isCoercibleTo(@NonNull Type toType) {
+    public boolean isCoercibleTo(CoercionOptions options, @NonNull Type toType) {
         return true;
     }
 

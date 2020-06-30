@@ -18,7 +18,7 @@ public class ApplyFunction extends Expression {
     String name;
     List<Expression> arguments;
 
-    public ApplyFunction(@NonNull String name, @NonNull List<Expression> arguments,@NonNull int id) {
+    public ApplyFunction(@NonNull String name, @NonNull List<Expression> arguments, @NonNull int id) {
         super(id);
         this.name = name;
         this.arguments = arguments;
@@ -30,6 +30,6 @@ public class ApplyFunction extends Expression {
         for (Expression argument : arguments) {
             argumentTypes.add(argument.typeCheck(target, namespace));
         }
-        return namespace.getLib().evaluateReturnType(name, argumentTypes);
+        return namespace.getLib().evaluateReturnType(name, argumentTypes, namespace.getCoercionOptions());
     }
 }

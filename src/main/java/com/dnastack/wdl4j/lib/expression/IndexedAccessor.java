@@ -33,7 +33,7 @@ public class IndexedAccessor extends Expression {
 
         if (elementType instanceof MapType) {
             MapType mapType = (MapType) elementType;
-            if (!accessorType.isCoercibleTo(mapType.getKeyType())) {
+            if (!accessorType.isCoercibleTo(namespace.getCoercionOptions(), mapType.getKeyType())) {
                 throw new IllegalAccessException(
                         "Invalid key type for accessing map attribute. Expecting type coercible to " + mapType.getKeyType()
                                                                                                               .getTypeName() + " but got " + accessorType

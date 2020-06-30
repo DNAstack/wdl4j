@@ -21,6 +21,6 @@ public class Grouping extends Expression {
 
     @Override
     public Type typeCheck(WdlElement target, Namespace namespace) throws WdlValidationError {
-        return innerExpression.typeCheck(target,namespace);
+        return innerExpression.typeCheck(target, namespace);
     }
 }

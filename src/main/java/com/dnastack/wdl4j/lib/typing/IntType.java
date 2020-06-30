@@ -15,11 +15,11 @@ public class IntType extends Type {
     }
 
     @Override
-    public boolean isCoercibleTo(@NonNull Type toType) {
-        if (toType instanceof StringType || toType instanceof FloatType){
+    public boolean isCoercibleTo(CoercionOptions options, @NonNull Type toType) {
+        if (toType instanceof StringType || toType instanceof FloatType) {
             return true;
-        } else  {
-            return super.isCoercibleTo(toType);
+        } else {
+            return super.isCoercibleTo(options, toType);
         }
     }
 

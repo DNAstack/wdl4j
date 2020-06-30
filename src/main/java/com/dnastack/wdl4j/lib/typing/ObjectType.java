@@ -11,6 +11,8 @@ import java.util.Set;
 public class ObjectType extends Type {
 
     private static final ObjectType INSTANCE = new ObjectType(null);
+    @Getter
+    private Map<String, Type> members;
 
     public static ObjectType getType() {
         return INSTANCE;
@@ -21,28 +23,11 @@ public class ObjectType extends Type {
         return new ObjectType(objectTypes);
     }
 
-    @Getter
-    private Map<String, Type> members;
-
     private ObjectType(Map<String, Type> objectTypes) {
         this.members = objectTypes;
     }
 
-    @Override
-    public boolean isCoercibleTo(@NonNull Type toType) {
-        if (toType instanceof StructType) {
-            return membersAreCoercible(((StructType) toType).getMembers());
-        } else if (toType instanceof ObjectType) {
-            if (members == null && ((ObjectType) toType).members == null){
-                return true;
-            }
-
-            return membersAreCoercible(((ObjectType) toType).members);
-        }
-        return super.isCoercibleTo(toType);
-    }
-
-    private boolean membersAreCoercible(Map<String, Type> toMembers) {
+    private boolean membersAreCoercible(CoercionOptions options, Map<String, Type> toMembers) {
         if (toMembers == null || members == null) {
             return false;
         }
@@ -51,8 +36,9 @@ public class ObjectType extends Type {
         Set<String> toKeys = new HashSet<>(toMembers.keySet());
 
         for (String k : keys) {
-            if (!(toKeys.contains(k) && toMembers.get(k).isCoercibleTo(members.get(k)))) {
+            if (!(toKeys.contains(k) && toMembers.get(k).isCoercibleTo(options, members.get(k)))) {
                 return false;
+
             }
         }
 
@@ -64,6 +50,20 @@ public class ObjectType extends Type {
         }
         return true;
 
+    }
+
+    @Override
+    public boolean isCoercibleTo(CoercionOptions options, @NonNull Type toType) {
+        if (toType instanceof StructType) {
+            return membersAreCoercible(options, ((StructType) toType).getMembers());
+        } else if (toType instanceof ObjectType) {
+            if (members == null && ((ObjectType) toType).members == null) {
+                return true;
+            }
+
+            return membersAreCoercible(options, ((ObjectType) toType).members);
+        }
+        return super.isCoercibleTo(options, toType);
     }
 
     @Override

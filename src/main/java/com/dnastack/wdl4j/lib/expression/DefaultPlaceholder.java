@@ -24,7 +24,7 @@ public class DefaultPlaceholder extends Expression {
     @Override
     public Type typeCheck(WdlElement target, Namespace namespace) throws WdlValidationError {
         Type evaluatedType = value.typeCheck(target, namespace);
-        if (!evaluatedType.isCoercibleTo(StringType.getType())) {
+        if (!evaluatedType.isCoercibleTo(namespace.getCoercionOptions(), StringType.getType())) {
             throw new TypeCoercionException("Illegal Type Coercion. Cannot coerce " + evaluatedType.getTypeName() + " into String");
         }
         return StringType.getType();

@@ -1,5 +1,7 @@
 package com.dnastack.wdl4j.lib.typing;
 
+import com.dnastack.wdl4j.lib.Namespace;
+import com.dnastack.wdl4j.lib.exception.NamespaceException;
 import lombok.*;
 
 import java.util.Map;
@@ -26,7 +28,13 @@ public class StructType extends Type {
     }
 
     @Override
-    public boolean isCoercibleTo(@NonNull Type toType) {
+    public void typecheck(Namespace namespace) throws NamespaceException {
+        //Make sure that the struct is in the current namespace
+        namespace.getStruct(name);
+    }
+
+    @Override
+    public boolean isCoercibleTo(CoercionOptions options, @NonNull Type toType) {
         if (toType instanceof StructType) {
             StructType structToType = (StructType) toType;
             if (structToType.name.equals(name)) {
@@ -37,7 +45,7 @@ public class StructType extends Type {
                 return false;
             }
         }
-        return super.isCoercibleTo(toType);
+        return super.isCoercibleTo(options, toType);
     }
 
     @Override

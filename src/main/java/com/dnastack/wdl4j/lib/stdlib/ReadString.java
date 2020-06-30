@@ -4,6 +4,7 @@ import com.dnastack.wdl4j.lib.api.EngineFunction;
 import com.dnastack.wdl4j.lib.exception.ArityException;
 import com.dnastack.wdl4j.lib.exception.TypeCoercionException;
 import com.dnastack.wdl4j.lib.exception.WdlValidationError;
+import com.dnastack.wdl4j.lib.typing.CoercionOptions;
 import com.dnastack.wdl4j.lib.typing.FileType;
 import com.dnastack.wdl4j.lib.typing.StringType;
 import com.dnastack.wdl4j.lib.typing.Type;
@@ -13,9 +14,10 @@ import java.util.List;
 public class ReadString implements EngineFunction {
 
     @Override
-    public Type evaluateReturnType(List<Type> argumentTypes) throws WdlValidationError {
+    public Type evaluateReturnType(List<Type> argumentTypes, CoercionOptions options) throws WdlValidationError {
         Type argumentType = argumentTypes.get(0);
-        if (!argumentType.isCoercibleTo(FileType.getType()) && !argumentType.isCoercibleTo(StringType.getType())) {
+        if (!argumentType.isCoercibleTo(options, FileType.getType()) && !argumentType.isCoercibleTo(options,
+                                                                                                    StringType.getType())) {
             throw new TypeCoercionException(
                     "Illegal argument type for read_string function, expecting one of [String,File] but got " + argumentType
                             .getTypeName());

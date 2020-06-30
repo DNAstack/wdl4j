@@ -36,7 +36,7 @@ public class ArrayLiteral extends Expression {
 
                 if (targetType == null) {
                     targetType = evalutedType;
-                } else if (!evalutedType.isCoercibleTo(targetType)) {
+                } else if (!evalutedType.isCoercibleTo(namespace.getCoercionOptions(), targetType)) {
                     throw new TypeCoercionException("Illegal type coercion. Cannot coerce type " + evalutedType.getTypeName() + " to " + targetType
                             .getTypeName());
                 }

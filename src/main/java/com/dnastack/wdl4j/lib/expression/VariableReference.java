@@ -25,8 +25,8 @@ public class VariableReference extends Expression implements NamedElement {
     @Override
     public Type typeCheck(WdlElement target, Namespace namespace) throws WdlValidationError {
         Declaration declaration = namespace.getDeclaration(name);
-        if (target.getId() > declaration.getId()) {
-            throw new IllegalReferenceException("Variable \"" + declaration.getName() + "\" referenced prior to being defned");
+        if (target.getId() < declaration.getId()) {
+            throw new IllegalReferenceException("Variable \"" + declaration.getName() + "\" referenced prior to being defined");
         }
         return declaration.getDeclType();
 

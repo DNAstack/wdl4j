@@ -29,7 +29,8 @@ public class IfThenElse extends Expression {
     public Type typeCheck(WdlElement target, Namespace namespace) throws WdlValidationError {
         Type conditionType = condition.typeCheck(target, namespace);
 
-        if (!(conditionType instanceof BooleanType) || conditionType.isCoercibleTo(BooleanType.getType())) {
+        if (!(conditionType instanceof BooleanType) || !conditionType.isCoercibleTo(namespace.getCoercionOptions(),
+                                                                                    BooleanType.getType())) {
             throw new ExpressionEvaluationException(
                     "Illegal condition in if then else. Expecting a condition coercible to type Boolean but got " + conditionType
                             .getTypeName());
@@ -38,7 +39,7 @@ public class IfThenElse extends Expression {
         Type ifTrueType = ifTrue.typeCheck(target, namespace);
         Type ifFalseType = ifFalse.typeCheck(target, namespace);
 
-        if (!ifFalseType.isCoercibleTo(ifTrueType)) {
+        if (!ifFalseType.isCoercibleTo(namespace.getCoercionOptions(), ifTrueType)) {
             throw new ExpressionEvaluationException("Illegal return type for else statement. Expecting a type of " + ifTrueType
                     .getTypeName() + " but got " + ifFalseType.getTypeName());
         }

@@ -17,9 +17,10 @@ public class ReadObject implements EngineFunction {
     }
 
     @Override
-    public Type evaluateReturnType(List<Type> argumentTypes) throws WdlValidationError {
+    public Type evaluateReturnType(List<Type> argumentTypes, CoercionOptions options) throws WdlValidationError {
         Type argumentType = argumentTypes.get(0);
-        if (!argumentType.isCoercibleTo(FileType.getType()) && !argumentType.isCoercibleTo(StringType.getType())) {
+        if (!argumentType.isCoercibleTo(options, FileType.getType()) && !argumentType.isCoercibleTo(options,
+                                                                                                    StringType.getType())) {
             throw new TypeCoercionException(
                     "Illegal argument type for read_object function, expecting one of [String,File] but got " + argumentType
                             .getTypeName());

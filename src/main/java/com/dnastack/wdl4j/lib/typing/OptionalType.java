@@ -1,5 +1,8 @@
 package com.dnastack.wdl4j.lib.typing;
 
+import com.dnastack.wdl4j.lib.LanguageLevel;
+import com.dnastack.wdl4j.lib.Namespace;
+import com.dnastack.wdl4j.lib.exception.NamespaceException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,12 +20,21 @@ public class OptionalType extends Type {
     }
 
     @Override
-    public boolean isCoercibleTo(@NonNull Type toType) {
-        if (toType instanceof OptionalType) {
-            return innerType.isCoercibleTo(((OptionalType) toType).innerType);
+    public boolean isCoercibleTo(CoercionOptions options, @NonNull Type toType) {
+        if (options.getLanguageLevel() != null && options.getLanguageLevel().equals(LanguageLevel.WDL_DRAFT_2)) {
+            return innerType.isCoercibleTo(options, toType);
         } else {
-            return false;
+            if (toType instanceof OptionalType) {
+                return innerType.isCoercibleTo(options, ((OptionalType) toType).innerType);
+            } else {
+                return false;
+            }
         }
+    }
+
+    @Override
+    public void typecheck(Namespace namespace) throws NamespaceException {
+        innerType.typecheck(namespace);
     }
 
     @Override

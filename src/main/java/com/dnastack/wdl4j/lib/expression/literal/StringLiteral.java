@@ -86,7 +86,7 @@ public class StringLiteral extends Expression {
             for (StringPart part : stringParts) {
                 if (part.getExpression() != null) {
                     Type evaluatedType = part.getExpression().typeCheck(target, namespace);
-                    if (!evaluatedType.isCoercibleTo(StringType.getType())) {
+                    if (!evaluatedType.isCoercibleTo(namespace.getCoercionOptions(), StringType.getType())) {
                         throw new TypeCoercionException("Illegal type coercion. Cannot cast type " + evaluatedType.getTypeName() + " to String");
                     }
                 }

@@ -1,5 +1,7 @@
 package com.dnastack.wdl4j.lib.typing;
 
+import com.dnastack.wdl4j.lib.Namespace;
+import com.dnastack.wdl4j.lib.exception.NamespaceException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,14 +29,19 @@ public class ArrayType extends Type {
     }
 
     @Override
-    public boolean isCoercibleTo(@NonNull Type toType) {
+    public void typecheck(Namespace namespace) throws NamespaceException {
+        innerType.typecheck(namespace);
+    }
+
+    @Override
+    public boolean isCoercibleTo(CoercionOptions options, @NonNull Type toType) {
         if (toType instanceof ArrayType) {
             ArrayType arrayToType = (ArrayType) toType;
-            return (!arrayToType.nonEmpty || nonEmpty) && innerType.isCoercibleTo(arrayToType.innerType);
+            return (!arrayToType.nonEmpty || nonEmpty) && innerType.isCoercibleTo(options, arrayToType.innerType);
         } else if (toType instanceof StringType) {
-            return innerType == null || innerType.isCoercibleTo(StringType.getType());
+            return innerType == null || innerType.isCoercibleTo(options, StringType.getType());
         }
-        return super.isCoercibleTo(toType);
+        return super.isCoercibleTo(options, toType);
     }
 
     @Override

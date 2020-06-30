@@ -16,11 +16,10 @@ public class BooleanLiteral extends Expression {
 
     boolean value;
 
-    public BooleanLiteral(boolean value,@NonNull int id) {
+    public BooleanLiteral(boolean value, @NonNull int id) {
         super(id);
         this.value = value;
     }
-
 
     @Override
     public Type typeCheck(WdlElement target, Namespace namespace) throws WdlValidationError {

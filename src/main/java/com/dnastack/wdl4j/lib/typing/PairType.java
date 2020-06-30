@@ -1,5 +1,7 @@
 package com.dnastack.wdl4j.lib.typing;
 
+import com.dnastack.wdl4j.lib.Namespace;
+import com.dnastack.wdl4j.lib.exception.NamespaceException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,11 +26,18 @@ public class PairType extends Type {
     }
 
     @Override
-    public boolean isCoercibleTo(@NonNull Type toType) {
+    public void typecheck(Namespace namespace) throws NamespaceException {
+        leftType.typecheck(namespace);
+        rightType.typecheck(namespace);
+    }
+
+    @Override
+    public boolean isCoercibleTo(CoercionOptions options, @NonNull Type toType) {
         if (toType instanceof PairType) {
-            return rightType.isCoercibleTo(((PairType) toType).rightType) && leftType.isCoercibleTo(((PairType) toType).leftType);
+            return rightType.isCoercibleTo(options, ((PairType) toType).rightType) && leftType.isCoercibleTo(options,
+                                                                                                             ((PairType) toType).leftType);
         } else {
-            return super.isCoercibleTo(toType);
+            return super.isCoercibleTo(options, toType);
         }
     }
 

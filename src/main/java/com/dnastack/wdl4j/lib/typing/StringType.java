@@ -15,11 +15,11 @@ public class StringType extends Type {
     }
 
     @Override
-    public boolean isCoercibleTo(@NonNull Type toType) {
+    public boolean isCoercibleTo(CoercionOptions options, @NonNull Type toType) {
         if (toType instanceof FileType || toType instanceof IntType || toType instanceof FloatType) {
             return true;
         }
-        return super.isCoercibleTo(toType);
+        return super.isCoercibleTo(options, toType);
     }
 
     @Override

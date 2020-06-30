@@ -19,25 +19,25 @@ public class Size implements EngineFunction {
                                                                                false));
 
     @Override
-    public Type evaluateReturnType(List<Type> argumentTypes) throws WdlValidationError {
+    public Type evaluateReturnType(List<Type> argumentTypes, CoercionOptions options) throws WdlValidationError {
         Type argumentType = argumentTypes.get(0);
         if (argumentTypes.size() == 2) {
             Type unitType = argumentTypes.get(1);
-            if (!unitType.isCoercibleTo(StringType.getType())) {
+            if (!unitType.isCoercibleTo(options, StringType.getType())) {
                 throw new TypeCoercionException(
                         "Illegal argument type for optional 'Units' parameter of size function. Expecting string but got " + unitType
                                 .getTypeName());
             }
         }
 
-        boolean canCoerce = acceptableTypes.stream().anyMatch(argumentType::isCoercibleTo);
+        boolean canCoerce = acceptableTypes.stream().anyMatch(toType -> argumentType.isCoercibleTo(options, toType));
         String typeNames = acceptableTypes.stream().map(Type::getTypeName).collect(Collectors.joining(","));
 
         if (!canCoerce) {
-            throw new TypeCoercionException("Illegal argument type for write_tsv function, expecting one of [" + typeNames + "] but got " + argumentType
+            throw new TypeCoercionException("Illegal argument type for size function, expecting one of [" + typeNames + "] but got " + argumentType
                     .getTypeName());
         }
-        return FileType.getType();
+        return FloatType.getType();
     }
 
     @Override

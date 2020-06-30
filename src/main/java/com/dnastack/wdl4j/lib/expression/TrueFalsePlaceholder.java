@@ -27,11 +27,10 @@ public class TrueFalsePlaceholder extends Expression {
         this.condition = condition;
     }
 
-
     @Override
     public Type typeCheck(WdlElement target, Namespace namespace) throws WdlValidationError {
         Type valueType = value.typeCheck(target, namespace);
-        if (!valueType.isCoercibleTo(StringType.getType())) {
+        if (!valueType.isCoercibleTo(namespace.getCoercionOptions(), StringType.getType())) {
             throw new TypeCoercionException(
                     "Illegal type evaluation for true/false placeholder. Expression must be coercible to type String but got " + valueType
                             .getTypeName());

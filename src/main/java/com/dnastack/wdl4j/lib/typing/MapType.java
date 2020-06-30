@@ -1,5 +1,7 @@
 package com.dnastack.wdl4j.lib.typing;
 
+import com.dnastack.wdl4j.lib.Namespace;
+import com.dnastack.wdl4j.lib.exception.NamespaceException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,10 +33,16 @@ public class MapType extends Type {
     }
 
     @Override
-    public boolean isCoercibleTo(@NonNull Type toType) {
+    public void typecheck(Namespace namespace) throws NamespaceException {
+        keyType.typecheck(namespace);
+        valueType.typecheck(namespace);
+    }
+
+    @Override
+    public boolean isCoercibleTo(CoercionOptions options, @NonNull Type toType) {
         if (toType instanceof MapType) {
             MapType mapToType = (MapType) toType;
-            return keyType.isCoercibleTo(mapToType) && valueType.isCoercibleTo(valueType);
+            return keyType.isCoercibleTo(options, mapToType) && valueType.isCoercibleTo(options, valueType);
         } else if (toType instanceof StructType && literalNames != null && !literalNames.isEmpty()) {
             StructType structToType = (StructType) toType;
             Map<String, Type> members = structToType.getMembers();
@@ -47,7 +55,7 @@ public class MapType extends Type {
             Set<String> toKeys = new HashSet<>(members.keySet());
 
             for (String k : literalNames) {
-                if (!(toKeys.contains(k) && members.get(k).isCoercibleTo(valueType))) {
+                if (!(toKeys.contains(k) && members.get(k).isCoercibleTo(options, valueType))) {
                     return false;
                 }
             }
@@ -62,7 +70,7 @@ public class MapType extends Type {
 
         }
 
-        return super.isCoercibleTo(toType);
+        return super.isCoercibleTo(options, toType);
     }
 
     @Override

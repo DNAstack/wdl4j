@@ -4,21 +4,18 @@ import com.dnastack.wdl4j.lib.api.EngineFunction;
 import com.dnastack.wdl4j.lib.exception.ArityException;
 import com.dnastack.wdl4j.lib.exception.TypeCoercionException;
 import com.dnastack.wdl4j.lib.exception.WdlValidationError;
-import com.dnastack.wdl4j.lib.typing.FileType;
-import com.dnastack.wdl4j.lib.typing.MapType;
-import com.dnastack.wdl4j.lib.typing.StringType;
-import com.dnastack.wdl4j.lib.typing.Type;
+import com.dnastack.wdl4j.lib.typing.*;
 
 import java.util.List;
 
 public class WriteMap implements EngineFunction {
 
     @Override
-    public Type evaluateReturnType(List<Type> argumentTypes) throws WdlValidationError {
+    public Type evaluateReturnType(List<Type> argumentTypes, CoercionOptions options) throws WdlValidationError {
         Type argumentType = argumentTypes.get(0);
         Type requiredType = MapType.getType(StringType.getType(), StringType.getType());
 
-        if (!argumentType.isCoercibleTo(requiredType)) {
+        if (!argumentType.isCoercibleTo(options, requiredType)) {
             throw new TypeCoercionException(
                     "Illegal argument type for write_map function, expecting Array[String] but got " + argumentType.getTypeName());
         }

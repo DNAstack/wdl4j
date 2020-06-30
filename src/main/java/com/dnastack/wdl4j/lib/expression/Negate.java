@@ -18,7 +18,7 @@ public class Negate extends Expression {
 
     Expression expression;
 
-    public Negate(@NonNull Expression expression,@NonNull int id) {
+    public Negate(@NonNull Expression expression, @NonNull int id) {
         super(id);
         this.expression = expression;
     }
@@ -27,10 +27,12 @@ public class Negate extends Expression {
     public Type typeCheck(WdlElement target, Namespace namespace) throws WdlValidationError {
         Type evaluatedType = expression.typeCheck(target, namespace);
 
-        if (evaluatedType instanceof FloatType || evaluatedType instanceof IntType || evaluatedType instanceof BooleanType){
+        if (evaluatedType instanceof FloatType || evaluatedType instanceof IntType || evaluatedType instanceof BooleanType) {
             return evaluatedType;
         } else {
-            throw new ExpressionEvaluationException("Illegal Type for negation. Expecting an expression evaluating to one of [Boolean,Int,Float] but got " + evaluatedType.getTypeName());
+            throw new ExpressionEvaluationException(
+                    "Illegal Type for negation. Expecting an expression evaluating to one of [Boolean,Int,Float] but got " + evaluatedType
+                            .getTypeName());
         }
     }
 }

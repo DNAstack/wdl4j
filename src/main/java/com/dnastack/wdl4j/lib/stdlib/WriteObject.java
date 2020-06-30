@@ -4,10 +4,7 @@ import com.dnastack.wdl4j.lib.api.EngineFunction;
 import com.dnastack.wdl4j.lib.exception.ArityException;
 import com.dnastack.wdl4j.lib.exception.TypeCoercionException;
 import com.dnastack.wdl4j.lib.exception.WdlValidationError;
-import com.dnastack.wdl4j.lib.typing.ArrayType;
-import com.dnastack.wdl4j.lib.typing.FileType;
-import com.dnastack.wdl4j.lib.typing.ObjectType;
-import com.dnastack.wdl4j.lib.typing.Type;
+import com.dnastack.wdl4j.lib.typing.*;
 
 import java.util.List;
 
@@ -20,11 +17,11 @@ public class WriteObject implements EngineFunction {
     }
 
     @Override
-    public Type evaluateReturnType(List<Type> argumentTypes) throws WdlValidationError {
+    public Type evaluateReturnType(List<Type> argumentTypes, CoercionOptions options) throws WdlValidationError {
         Type argumentType = argumentTypes.get(0);
         Type requiredType = writeMultiple ? ArrayType.getType(ObjectType.getType(), false) : ObjectType.getType();
 
-        if (!argumentType.isCoercibleTo(requiredType)) {
+        if (!argumentType.isCoercibleTo(options, requiredType)) {
             throw new TypeCoercionException(
                     "Illegal argument type for write_object function, expecting Array[String] but got " + argumentType.getTypeName());
         }
@@ -33,8 +30,11 @@ public class WriteObject implements EngineFunction {
 
     @Override
     public void checkArity(List<Type> argumentTypes) throws ArityException {
-        if (argumentTypes == null || argumentTypes.size() != 1){
-            throw new ArityException("Invalid number of arguments for function write_object. Expecting 1 but got " + (argumentTypes == null ? "none" : argumentTypes.size()));
+        if (argumentTypes == null || argumentTypes.size() != 1) {
+            throw new ArityException("Invalid number of arguments for function write_object. Expecting 1 but got " + (
+                    argumentTypes == null
+                    ? "none"
+                    : argumentTypes.size()));
         }
     }
 }

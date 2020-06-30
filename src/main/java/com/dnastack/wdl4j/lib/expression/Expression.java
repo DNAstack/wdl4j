@@ -17,6 +17,5 @@ public abstract class Expression implements WdlElement {
 
     public abstract Type typeCheck(WdlElement target, Namespace namespace) throws WdlValidationError;
 
-
 }
 

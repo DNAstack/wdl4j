@@ -15,14 +15,13 @@ public class FileType extends Type {
     }
 
     @Override
-    public boolean isCoercibleTo(@NonNull Type toType) {
-        if (toType instanceof StringType){
+    public boolean isCoercibleTo(CoercionOptions options, @NonNull Type toType) {
+        if (toType instanceof StringType) {
             return true;
-        } else  {
-            return super.isCoercibleTo(toType);
+        } else {
+            return super.isCoercibleTo(options, toType);
         }
     }
-
 
     @Override
     public String getTypeName() {

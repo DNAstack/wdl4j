@@ -4,6 +4,7 @@ import com.dnastack.wdl4j.lib.api.EngineFunction;
 import com.dnastack.wdl4j.lib.exception.ArityException;
 import com.dnastack.wdl4j.lib.exception.TypeCoercionException;
 import com.dnastack.wdl4j.lib.exception.WdlValidationError;
+import com.dnastack.wdl4j.lib.typing.CoercionOptions;
 import com.dnastack.wdl4j.lib.typing.FloatType;
 import com.dnastack.wdl4j.lib.typing.Type;
 
@@ -11,12 +12,11 @@ import java.util.List;
 
 public class Rounding implements EngineFunction {
 
+    private final Direction direction;
+    private final String funcName;
     public enum Direction {
         UP, DOWN, BOTH
     }
-
-    private final Direction direction;
-    private final String funcName;
 
     public Rounding(String name, Direction direction) {
         this.direction = direction;
@@ -24,9 +24,9 @@ public class Rounding implements EngineFunction {
     }
 
     @Override
-    public Type evaluateReturnType(List<Type> argumentTypes) throws WdlValidationError {
+    public Type evaluateReturnType(List<Type> argumentTypes, CoercionOptions options) throws WdlValidationError {
         Type argumentType = argumentTypes.get(0);
-        if (!argumentType.isCoercibleTo(FloatType.getType())) {
+        if (!argumentType.isCoercibleTo(options, FloatType.getType())) {
             throw new TypeCoercionException("Illegal argument type for basename function " + funcName + ", expecting Float but got " + argumentType
                     .getTypeName());
         }

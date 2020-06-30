@@ -1,5 +1,6 @@
 package com.dnastack.wdl4j.lib.typing;
 
+import com.dnastack.wdl4j.lib.LanguageLevel;
 import lombok.NonNull;
 
 public class FloatType extends Type {
@@ -15,11 +16,14 @@ public class FloatType extends Type {
     }
 
     @Override
-    public boolean isCoercibleTo(@NonNull Type toType) {
-        if (toType instanceof StringType){
+    public boolean isCoercibleTo(CoercionOptions options, @NonNull Type toType) {
+        if (toType instanceof IntType && options != null && options.getLanguageLevel()
+                                                                   .equals(LanguageLevel.WDL_DRAFT_2)) {
             return true;
-        } else  {
-            return super.isCoercibleTo(toType);
+        } else if (toType instanceof StringType) {
+            return true;
+        } else {
+            return super.isCoercibleTo(options, toType);
         }
     }
 
