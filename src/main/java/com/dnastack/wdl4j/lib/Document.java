@@ -4,11 +4,14 @@ import com.dnastack.wdl4j.lib.api.StandardLib;
 import com.dnastack.wdl4j.lib.api.WdlElement;
 import com.dnastack.wdl4j.lib.exception.NamespaceException;
 import com.dnastack.wdl4j.lib.exception.WdlValidationError;
+import com.dnastack.wdl4j.lib.typing.CoercionOptions;
 import com.dnastack.wdl4j.lib.typing.StructType;
 import com.dnastack.wdl4j.lib.typing.Type;
 import lombok.*;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -21,69 +24,66 @@ public class Document implements WdlElement {
     private List<Struct> structs;
     private List<Task> tasks;
     private Workflow workflow;
-    private Map<String, Document> importedDocuments;
     @NonNull
     private int id;
     private StandardLib lib;
     private LanguageLevel languageLevel;
+    private CoercionOptions coercionOptions;
 
-    public Document(Version version, List<Import> imports, List<Struct> structs, List<Task> tasks, Workflow workflow, int id,LanguageLevel languageLevel) {
+    public Document(Version version, List<Import> imports, List<Struct> structs, List<Task> tasks, Workflow workflow, int id, LanguageLevel languageLevel) {
         this.version = version;
         this.imports = imports;
         this.structs = structs;
         this.tasks = tasks;
         this.workflow = workflow;
         this.id = id;
-        this.languageLevel = languageLevel;
+        this.coercionOptions = new CoercionOptions(languageLevel);
     }
 
-    public void typeCheck() throws WdlValidationError {
-        if (importedDocuments != null) {
-            for (Map.Entry<String, Document> importedDocument : importedDocuments.entrySet()) {
-                importedDocument.getValue().typeCheck();
+    private void validateImportedDocs() throws WdlValidationError {
+        for (Import wdlImport : imports) {
+            if (wdlImport.getDocument() == null) {
+                throw new WdlValidationError("Imported WDL does not contain a resolved Document");
+            }
+
+            Document importedDocument = wdlImport.getDocument();
+            importedDocument.validate();
+            if (wdlImport.getAliases() != null && !wdlImport.getAliases().isEmpty()) {
+                for (Import.ImportAlias alias : wdlImport.getAliases()) {
+                    if (importedDocument.getStructs() == null || importedDocument.getStructs()
+                                                                                 .stream()
+                                                                                 .noneMatch(s -> s.getName()
+                                                                                                  .equals(alias.getName()))) {
+                        throw new WdlValidationError("Attempting to alias non-existant struct '" + alias.getName() + "' from import '" + wdlImport
+                                .getName() + "' as '" + alias.getAlias() + "'");
+                    }
+                }
             }
         }
-
-
-        Namespace namespace = captureNamespace();
-        if (tasks != null) {
-            for (Task task : tasks) {
-                task.typeCheck(namespace);
-            }
-        }
-
-        if (workflow != null) {
-            workflow.typeCheck(namespace);
-        }
-
-
     }
 
     private Namespace captureNamespace() throws NamespaceException {
         Namespace namespace = new Namespace();
-        namespace.setLanguageLevel(languageLevel);
+        namespace.setCoercionOptions(coercionOptions);
         namespace.setLib(lib);
-        if (importedDocuments != null) {
-            for (Map.Entry<String, Document> entry : importedDocuments.entrySet()) {
-                String childNamespace = entry.getKey();
-                Document childDocument = entry.getValue();
-                captureChildNamespace(namespace, childNamespace, childDocument);
+        if (imports != null) {
+            for (Import wdlImport : imports) {
+                captureChildNamespace(namespace, wdlImport.getName(), wdlImport.getDocument());
             }
         }
 
-        if (structs != null && !languageLevel.equals(LanguageLevel.WDL_DRAFT_2) ) {
+        if (structs != null && !languageLevel.equals(LanguageLevel.WDL_DRAFT_2)) {
             for (Struct struct : structs) {
                 namespace.addStruct(struct);
             }
         }
 
         if (workflow != null) {
-            captureWorfklowNamespace(namespace);
+            captureWorkflowNamespace(namespace);
         }
 
         if (tasks != null) {
             for (Task task : tasks) {
-                namespace.addTask(task);
                 captureTaskNamespace(namespace, task);
             }
         }
@@ -92,21 +92,19 @@ public class Document implements WdlElement {
 
     private void captureChildNamespace(Namespace currentNamespace, String childNamespace, Document childDocument) throws NamespaceException {
         currentNamespace.addChildNamespace(childNamespace, childDocument.captureNamespace());
-        Import docImport = imports.stream().filter(imp -> imp.getName().equals(childNamespace)).findFirst().get();
-        List<Struct> importedStructs = childDocument.getStructs(docImport.getAliases());
-        for (Struct struct : importedStructs) {
-            currentNamespace.addStruct(struct);
-        }
+
     }
 
     private void captureTaskNamespace(Namespace currentNamespace, Task task) throws NamespaceException {
         Namespace taskNamespace = new Namespace();
+        taskNamespace.setCoercionOptions(coercionOptions);
         taskNamespace.setLanguageLevel(languageLevel);
         if (task.getInputs() != null && task.getInputs().getDeclarations() != null) {
             for (Declaration inputDecl : task.getInputs().getDeclarations()) {
                 if (inputDecl.getDeclType() instanceof StructType) {
                     setStructMembers(currentNamespace, (StructType) inputDecl.getDeclType());
                 }
+                inputDecl.setFromInputs(true);
                 taskNamespace.addDeclaration(inputDecl.getName(), inputDecl);
             }
         }
@@ -116,22 +114,24 @@ public class Document implements WdlElement {
                 if (outputDecl.getDeclType() instanceof StructType) {
                     setStructMembers(currentNamespace, (StructType) outputDecl.getDeclType());
                 }
+                outputDecl.setFromOutputs(true);
                 taskNamespace.addDeclaration(outputDecl.getName(), outputDecl);
             }
         }
 
-
         currentNamespace.addChildNamespace(task.getName(), taskNamespace);
     }
 
-    private void captureWorfklowNamespace(Namespace currentNamespace) throws NamespaceException {
+    private void captureWorkflowNamespace(Namespace currentNamespace) throws NamespaceException {
         Namespace workflowNamespace = new Namespace();
+        workflowNamespace.setCoercionOptions(coercionOptions);
         workflowNamespace.setLanguageLevel(languageLevel);
         if (workflow.getInputs() != null && workflow.getInputs().getDeclarations() != null) {
             for (Declaration inputDecl : workflow.getInputs().getDeclarations()) {
                 if (inputDecl.getDeclType() instanceof StructType) {
                     setStructMembers(currentNamespace, (StructType) inputDecl.getDeclType());
                 }
+                inputDecl.setFromInputs(true);
                 workflowNamespace.addDeclaration(inputDecl.getName(), inputDecl);
             }
         }
@@ -141,35 +141,12 @@ public class Document implements WdlElement {
                 if (outputDecl.getDeclType() instanceof StructType) {
                     setStructMembers(currentNamespace, (StructType) outputDecl.getDeclType());
                 }
+                outputDecl.setFromOutputs(true);
                 workflowNamespace.addDeclaration(outputDecl.getName(), outputDecl);
             }
         }
 
         currentNamespace.addChildNamespace(workflow.getName(), workflowNamespace);
-    }
-
-    public List<Struct> getStructs(List<Import.ImportAlias> aliases) {
-        List<Struct> structsToReturn = new ArrayList<>();
-        if (structs != null) {
-            for (Struct struct : structs) {
-                Optional<Import.ImportAlias> optionalAlias = aliases == null
-                                                             ? Optional.empty()
-                                                             : aliases.stream()
-                                                                      .filter(alias -> alias.getName()
-                                                                                            .equals(struct.getName()) && alias.getAlias() != null)
-                                                                      .findFirst();
-                if (optionalAlias.isPresent()) {
-                    Import.ImportAlias alias = optionalAlias.get();
-                    structsToReturn.add(Struct.newBuilder()
-                                              .members(struct.getMembers())
-                                              .name(alias.getAlias())
-                                              .build());
-                } else {
-                    structsToReturn.add(struct);
-                }
-            }
-        }
-        return structsToReturn;
     }
 
     private void setStructMembers(Namespace namespace, StructType structType) throws NamespaceException {
@@ -179,6 +156,30 @@ public class Document implements WdlElement {
             members.put(declaration.getName(), declaration.getDeclType());
         }
         structType.setMembers(members);
+    }
+
+    public void validate() throws WdlValidationError {
+
+        if (imports != null) {
+            validateImportedDocs();
+        }
+
+        Namespace namespace = captureNamespace();
+        if (structs != null) {
+            for (Struct struct : structs) {
+                struct.validate(namespace);
+            }
+        }
+        if (tasks != null) {
+            for (Task task : tasks) {
+                task.validate(namespace);
+            }
+        }
+
+        if (workflow != null) {
+            workflow.validate(namespace);
+        }
+
     }
 
 }

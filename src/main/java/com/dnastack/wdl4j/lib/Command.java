@@ -25,14 +25,14 @@ public class Command implements WdlElement {
         @NonNull
         private int id;
 
-        public CommandPart(String stringPart,int id) {
+        public CommandPart(String stringPart, int id) {
             this.stringPart = stringPart;
             this.placeholders = null;
             this.expression = null;
             this.id = id;
         }
 
-        public CommandPart(List<Expression> placeholders, Expression expression,int id) {
+        public CommandPart(List<Expression> placeholders, Expression expression, int id) {
             this.stringPart = null;
             this.placeholders = placeholders;
             this.expression = expression;

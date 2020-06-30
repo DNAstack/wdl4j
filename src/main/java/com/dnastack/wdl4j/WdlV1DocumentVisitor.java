@@ -90,6 +90,67 @@ public class WdlV1DocumentVisitor extends WdlV1ParserBaseVisitor<WdlElement> {
         }
     }
 
+    private Expression visitExpressionCore(WdlV1Parser.Expr_coreContext ctx) {
+        if (ctx instanceof WdlV1Parser.ApplyContext) {
+            return visitApply((WdlV1Parser.ApplyContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.Array_literalContext) {
+            return visitArray_literal((WdlV1Parser.Array_literalContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.Pair_literalContext) {
+            return visitPair_literal((WdlV1Parser.Pair_literalContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.Map_literalContext) {
+            return visitMap_literal((WdlV1Parser.Map_literalContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.Object_literalContext) {
+            return visitObject_literal((WdlV1Parser.Object_literalContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.IfthenelseContext) {
+            return visitIfthenelse((WdlV1Parser.IfthenelseContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.Expression_groupContext) {
+            return visitExpression_group((WdlV1Parser.Expression_groupContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.AtContext) {
+            return visitAt((WdlV1Parser.AtContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.Get_nameContext) {
+            return visitGet_name((WdlV1Parser.Get_nameContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.NegateContext) {
+            return visitNegate((WdlV1Parser.NegateContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.UnarysignedContext) {
+            return (Expression) visitUnarysigned((WdlV1Parser.UnarysignedContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.PrimitivesContext) {
+            return visitPrimitives((WdlV1Parser.PrimitivesContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.Left_nameContext) {
+            return visitLeft_name((WdlV1Parser.Left_nameContext) ctx);
+        } else {
+            return null;
+        }
+    }
+
+    private Object visitMetaValue(WdlV1Parser.Meta_valueContext meta_valueContext) {
+        if (meta_valueContext.MetaBool() != null) {
+            return Boolean.parseBoolean(meta_valueContext.MetaBool().getText());
+        } else if (meta_valueContext.MetaFloat() != null) {
+            return Float.parseFloat(meta_valueContext.MetaFloat().getText());
+        } else if (meta_valueContext.MetaInt() != null) {
+            return Float.parseFloat(meta_valueContext.MetaInt().getText());
+        } else if (meta_valueContext.meta_string() != null) {
+            return meta_valueContext.meta_string().meta_string_part().getText();
+        } else if (meta_valueContext.meta_object() != null) {
+            WdlV1Parser.Meta_objectContext metaObject = meta_valueContext.meta_object();
+            Map<String, Object> metaMap = new HashMap<>();
+            for (WdlV1Parser.Meta_object_kvContext metaObjectKvContext : metaObject.meta_object_kv()) {
+                metaMap.put(metaObjectKvContext.MetaObjectIdentifier().getText(),
+                            visitMetaValue(metaObjectKvContext.meta_value()));
+            }
+            return metaMap;
+        } else if (meta_valueContext.meta_array() != null) {
+            WdlV1Parser.Meta_arrayContext metaArrayContext = meta_valueContext.meta_array();
+            List<Object> metaList = new ArrayList<>();
+            for (WdlV1Parser.Meta_valueContext metaValue : metaArrayContext.meta_value()) {
+                metaList.add(visitMetaValue(metaValue));
+            }
+            return metaList;
+        } else {
+            return null;
+        }
+    }
+
     @Override
     public Type visitType_base(WdlV1Parser.Type_baseContext ctx) {
         if (ctx.BOOLEAN() != null) {
@@ -421,38 +482,6 @@ public class WdlV1DocumentVisitor extends WdlV1ParserBaseVisitor<WdlElement> {
         return new IndexedAccessor(visitExpressionCore(ctx.expr_core()), visitExpr(ctx.expr()), id);
     }
 
-    private Expression visitExpressionCore(WdlV1Parser.Expr_coreContext ctx) {
-        if (ctx instanceof WdlV1Parser.ApplyContext) {
-            return visitApply((WdlV1Parser.ApplyContext) ctx);
-        } else if (ctx instanceof WdlV1Parser.Array_literalContext) {
-            return visitArray_literal((WdlV1Parser.Array_literalContext) ctx);
-        } else if (ctx instanceof WdlV1Parser.Pair_literalContext) {
-            return visitPair_literal((WdlV1Parser.Pair_literalContext) ctx);
-        } else if (ctx instanceof WdlV1Parser.Map_literalContext) {
-            return visitMap_literal((WdlV1Parser.Map_literalContext) ctx);
-        } else if (ctx instanceof WdlV1Parser.Object_literalContext) {
-            return visitObject_literal((WdlV1Parser.Object_literalContext) ctx);
-        } else if (ctx instanceof WdlV1Parser.IfthenelseContext) {
-            return visitIfthenelse((WdlV1Parser.IfthenelseContext) ctx);
-        } else if (ctx instanceof WdlV1Parser.Expression_groupContext) {
-            return visitExpression_group((WdlV1Parser.Expression_groupContext) ctx);
-        } else if (ctx instanceof WdlV1Parser.AtContext) {
-            return visitAt((WdlV1Parser.AtContext) ctx);
-        } else if (ctx instanceof WdlV1Parser.Get_nameContext) {
-            return visitGet_name((WdlV1Parser.Get_nameContext) ctx);
-        } else if (ctx instanceof WdlV1Parser.NegateContext) {
-            return visitNegate((WdlV1Parser.NegateContext) ctx);
-        } else if (ctx instanceof WdlV1Parser.UnarysignedContext) {
-            return (Expression) visitUnarysigned((WdlV1Parser.UnarysignedContext) ctx);
-        } else if (ctx instanceof WdlV1Parser.PrimitivesContext) {
-            return visitPrimitives((WdlV1Parser.PrimitivesContext) ctx);
-        } else if (ctx instanceof WdlV1Parser.Left_nameContext) {
-            return visitLeft_name((WdlV1Parser.Left_nameContext) ctx);
-        } else {
-            return null;
-        }
-    }
-
     @Override
     public Negate visitNegate(WdlV1Parser.NegateContext ctx) {
 
@@ -587,35 +616,6 @@ public class WdlV1DocumentVisitor extends WdlV1ParserBaseVisitor<WdlElement> {
             }
         }
         return Meta.newBuilder().attributes(metaAttributes).id(id).build();
-    }
-
-    private Object visitMetaValue(WdlV1Parser.Meta_valueContext meta_valueContext) {
-        if (meta_valueContext.MetaBool() != null) {
-            return Boolean.parseBoolean(meta_valueContext.MetaBool().getText());
-        } else if (meta_valueContext.MetaFloat() != null) {
-            return Float.parseFloat(meta_valueContext.MetaFloat().getText());
-        } else if (meta_valueContext.MetaInt() != null) {
-            return Float.parseFloat(meta_valueContext.MetaInt().getText());
-        } else if (meta_valueContext.meta_string() != null) {
-            return meta_valueContext.meta_string().meta_string_part().getText();
-        } else if (meta_valueContext.meta_object() != null) {
-            WdlV1Parser.Meta_objectContext metaObject = meta_valueContext.meta_object();
-            Map<String, Object> metaMap = new HashMap<>();
-            for (WdlV1Parser.Meta_object_kvContext metaObjectKvContext : metaObject.meta_object_kv()) {
-                metaMap.put(metaObjectKvContext.MetaObjectIdentifier().getText(),
-                            visitMetaValue(metaObjectKvContext.meta_value()));
-            }
-            return metaMap;
-        } else if (meta_valueContext.meta_array() != null) {
-            WdlV1Parser.Meta_arrayContext metaArrayContext = meta_valueContext.meta_array();
-            List<Object> metaList = new ArrayList<>();
-            for (WdlV1Parser.Meta_valueContext metaValue : metaArrayContext.meta_value()) {
-                metaList.add(visitMetaValue(metaValue));
-            }
-            return metaList;
-        } else {
-            return null;
-        }
     }
 
     @Override

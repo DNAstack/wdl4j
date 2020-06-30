@@ -45,6 +45,49 @@ public class WdlDocumentFactory {
         this.wdlResolvers = wdlResolvers;
     }
 
+    private String getAliasForStruct(List<Import.ImportAlias> aliases, Struct struct) {
+        if (aliases == null) {
+            return null;
+        }
+        return aliases.stream()
+                      .filter(alias -> alias.getName().equals(struct.getName()))
+                      .map(alias -> alias.getAlias())
+                      .findFirst()
+                      .orElse(null);
+    }
+
+    LanguageLevel detectVersion(String wdl) {
+        String[] lines = wdl.split("[\n\r]");
+        String firstLine = null;
+        int i = 0;
+        while (firstLine == null && i < lines.length) {
+            String line = lines[i].trim();
+            if (!line.startsWith("#")) {
+                firstLine = line;
+            }
+            i++;
+        }
+
+        if (firstLine == null) {
+            throw new UnsupportedLanguageLevel("Could not resolve WDL, No readable lines in WDL file");
+        }
+
+        if (firstLine.startsWith("version")) {
+            Pattern v1Pattern = Pattern.compile("^version\\s+1\\.0");
+            Matcher matcher = v1Pattern.matcher(firstLine);
+            if (matcher.find()) {
+                return LanguageLevel.WDL_V1;
+            } else {
+                throw new UnsupportedLanguageLevel(
+                        "The current WDL document appears to be an unsupported language level: " + firstLine);
+            }
+
+        } else {
+            return LanguageLevel.WDL_DRAFT_2;
+        }
+
+    }
+
     public void setWdlResolvers(List<WdlResolver> wdlResolvers) {
         Objects.requireNonNull(wdlResolvers, "WdlResolvers cannot be null");
         this.wdlResolvers = wdlResolvers;
@@ -118,17 +161,6 @@ public class WdlDocumentFactory {
 
         }
         return wdl;
-    }
-
-    private String getAliasForStruct(List<Import.ImportAlias> aliases, Struct struct) {
-        if (aliases == null) {
-            return null;
-        }
-        return aliases.stream()
-                      .filter(alias -> alias.getName().equals(struct.getName()))
-                      .map(alias -> alias.getAlias())
-                      .findFirst()
-                      .orElse(null);
     }
 
     public String resolveWdlToString(URI uri, URI context) throws WdlResolutionException {
@@ -207,37 +239,5 @@ public class WdlDocumentFactory {
         CodePointBuffer codePointBuffer = CodePointBuffer.withBytes(ByteBuffer.wrap(inp.getBytes()));
         WdlDraft2Lexer lexer = new WdlDraft2Lexer(CodePointCharStream.fromBuffer(codePointBuffer));
         return new WdlDraft2Parser(new CommonTokenStream(lexer));
-    }
-
-    LanguageLevel detectVersion(String wdl) {
-        String[] lines = wdl.split("[\n\r]");
-        String firstLine = null;
-        int i = 0;
-        while (firstLine == null && i < lines.length) {
-            String line = lines[i].trim();
-            if (!line.startsWith("#")) {
-                firstLine = line;
-            }
-            i++;
-        }
-
-        if (firstLine == null) {
-            throw new UnsupportedLanguageLevel("Could not resolve WDL, No readable lines in WDL file");
-        }
-
-        if (firstLine.startsWith("version")) {
-            Pattern v1Pattern = Pattern.compile("^version\\s+1\\.0");
-            Matcher matcher = v1Pattern.matcher(firstLine);
-            if (matcher.find()) {
-                return LanguageLevel.WDL_V1;
-            } else {
-                throw new UnsupportedLanguageLevel(
-                        "The current WDL document appears to be an unsupported language level: " + firstLine);
-            }
-
-        } else {
-            return LanguageLevel.WDL_DRAFT_2;
-        }
-
     }
 }

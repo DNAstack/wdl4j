@@ -9,7 +9,6 @@ import com.dnastack.wdl4j.lib.stdlib.WdlDraft2StandardLib;
 import com.dnastack.wdl4j.lib.typing.*;
 import org.openwdl.wdl.parser.WdlDraft2Parser;
 import org.openwdl.wdl.parser.WdlDraft2ParserBaseVisitor;
-import org.openwdl.wdl.parser.WdlV1Parser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -91,6 +90,38 @@ public class WdlDraft2DocumentVisitor extends WdlDraft2ParserBaseVisitor<WdlElem
         }
     }
 
+    private Expression visitExpressionCore(WdlDraft2Parser.Expr_coreContext ctx) {
+        if (ctx instanceof WdlDraft2Parser.ApplyContext) {
+            return visitApply((WdlDraft2Parser.ApplyContext) ctx);
+        } else if (ctx instanceof WdlDraft2Parser.Array_literalContext) {
+            return visitArray_literal((WdlDraft2Parser.Array_literalContext) ctx);
+        } else if (ctx instanceof WdlDraft2Parser.Pair_literalContext) {
+            return visitPair_literal((WdlDraft2Parser.Pair_literalContext) ctx);
+        } else if (ctx instanceof WdlDraft2Parser.Map_literalContext) {
+            return visitMap_literal((WdlDraft2Parser.Map_literalContext) ctx);
+        } else if (ctx instanceof WdlDraft2Parser.Object_literalContext) {
+            return visitObject_literal((WdlDraft2Parser.Object_literalContext) ctx);
+        } else if (ctx instanceof WdlDraft2Parser.IfthenelseContext) {
+            return visitIfthenelse((WdlDraft2Parser.IfthenelseContext) ctx);
+        } else if (ctx instanceof WdlDraft2Parser.Expression_groupContext) {
+            return visitExpression_group((WdlDraft2Parser.Expression_groupContext) ctx);
+        } else if (ctx instanceof WdlDraft2Parser.AtContext) {
+            return visitAt((WdlDraft2Parser.AtContext) ctx);
+        } else if (ctx instanceof WdlDraft2Parser.Get_nameContext) {
+            return visitGet_name((WdlDraft2Parser.Get_nameContext) ctx);
+        } else if (ctx instanceof WdlDraft2Parser.NegateContext) {
+            return visitNegate((WdlDraft2Parser.NegateContext) ctx);
+        } else if (ctx instanceof WdlDraft2Parser.UnarysignedContext) {
+            return (Expression) visitUnarysigned((WdlDraft2Parser.UnarysignedContext) ctx);
+        } else if (ctx instanceof WdlDraft2Parser.PrimitivesContext) {
+            return visitPrimitives((WdlDraft2Parser.PrimitivesContext) ctx);
+        } else if (ctx instanceof WdlDraft2Parser.Left_nameContext) {
+            return visitLeft_name((WdlDraft2Parser.Left_nameContext) ctx);
+        } else {
+            return null;
+        }
+    }
+
     @Override
     public Type visitType_base(WdlDraft2Parser.Type_baseContext ctx) {
         if (ctx.BOOLEAN() != null) {
@@ -105,11 +136,11 @@ public class WdlDraft2DocumentVisitor extends WdlDraft2ParserBaseVisitor<WdlElem
             return IntType.getType();
         } else if (ctx.OBJECT() != null) {
             return ObjectType.getType();
-        } else if (ctx.map_type() != null){
+        } else if (ctx.map_type() != null) {
             return visitMap_type(ctx.map_type());
-        } else if (ctx.array_type() != null){
+        } else if (ctx.array_type() != null) {
             return visitArray_type(ctx.array_type());
-        } else if (ctx.pair_type() != null){
+        } else if (ctx.pair_type() != null) {
             return visitPair_type(ctx.pair_type());
         } else {
             return null;
@@ -473,38 +504,6 @@ public class WdlDraft2DocumentVisitor extends WdlDraft2ParserBaseVisitor<WdlElem
             }
         }
         return new ArrayLiteral(values, id);
-    }
-
-    private Expression visitExpressionCore(WdlDraft2Parser.Expr_coreContext ctx) {
-        if (ctx instanceof WdlDraft2Parser.ApplyContext) {
-            return visitApply((WdlDraft2Parser.ApplyContext) ctx);
-        } else if (ctx instanceof WdlDraft2Parser.Array_literalContext) {
-            return visitArray_literal((WdlDraft2Parser.Array_literalContext) ctx);
-        } else if (ctx instanceof WdlDraft2Parser.Pair_literalContext) {
-            return visitPair_literal((WdlDraft2Parser.Pair_literalContext) ctx);
-        } else if (ctx instanceof WdlDraft2Parser.Map_literalContext) {
-            return visitMap_literal((WdlDraft2Parser.Map_literalContext) ctx);
-        } else if (ctx instanceof WdlDraft2Parser.Object_literalContext) {
-            return visitObject_literal((WdlDraft2Parser.Object_literalContext) ctx);
-        } else if (ctx instanceof WdlDraft2Parser.IfthenelseContext) {
-            return visitIfthenelse((WdlDraft2Parser.IfthenelseContext) ctx);
-        } else if (ctx instanceof WdlDraft2Parser.Expression_groupContext) {
-            return visitExpression_group((WdlDraft2Parser.Expression_groupContext) ctx);
-        } else if (ctx instanceof WdlDraft2Parser.AtContext) {
-            return visitAt((WdlDraft2Parser.AtContext) ctx);
-        } else if (ctx instanceof WdlDraft2Parser.Get_nameContext) {
-            return visitGet_name((WdlDraft2Parser.Get_nameContext) ctx);
-        } else if (ctx instanceof WdlDraft2Parser.NegateContext) {
-            return visitNegate((WdlDraft2Parser.NegateContext) ctx);
-        } else if (ctx instanceof WdlDraft2Parser.UnarysignedContext) {
-            return (Expression) visitUnarysigned((WdlDraft2Parser.UnarysignedContext) ctx);
-        } else if (ctx instanceof WdlDraft2Parser.PrimitivesContext) {
-            return visitPrimitives((WdlDraft2Parser.PrimitivesContext) ctx);
-        } else if (ctx instanceof WdlDraft2Parser.Left_nameContext) {
-            return visitLeft_name((WdlDraft2Parser.Left_nameContext) ctx);
-        } else {
-            return null;
-        }
     }
 
     @Override

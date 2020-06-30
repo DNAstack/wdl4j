@@ -2,8 +2,6 @@ package com.dnastack.wdl4j.lib;
 
 import com.dnastack.wdl4j.lib.api.NamedElement;
 import com.dnastack.wdl4j.lib.api.WdlElement;
-import com.dnastack.wdl4j.lib.exception.NamespaceException;
-import com.dnastack.wdl4j.util.UriUtils;
 import lombok.*;
 
 import java.net.URI;
@@ -19,6 +17,7 @@ public class Import implements WdlElement, NamedElement {
     private String url;
     private String name;
     private List<ImportAlias> aliases;
+    private Document document;
     @NonNull
     private int id;
 
@@ -36,14 +35,6 @@ public class Import implements WdlElement, NamedElement {
     }
 
     public String getName() {
-        if (name != null) {
-            return name;
-        } else {
-            try {
-                return UriUtils.getImportNamepsaceFromUri(resolveImportUri());
-            } catch (NamespaceException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        return name;
     }
 }

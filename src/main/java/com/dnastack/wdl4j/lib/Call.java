@@ -14,14 +14,18 @@ import java.util.Map;
 public class Call implements WorkflowElement, NamedElement {
 
     @NonNull
-    private String taskName;
+    private String taskOrWorkflowName;
     private String callAlias;
     private Map<String, Expression> inputs;
+
+    private Map<String, Declaration> effectiveCallInputs;
+    private Map<String, Declaration> effectiveCallOutputs;
+
     @NonNull
     private int id;
 
     @Override
     public String getName() {
-        return callAlias != null ? callAlias : taskName;
+        return callAlias != null ? callAlias : taskOrWorkflowName;
     }
 }

@@ -15,5 +15,4 @@ public class Outputs implements WdlElement {
     @NonNull
     private int id;
 
-
 }

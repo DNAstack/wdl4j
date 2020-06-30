@@ -2,7 +2,6 @@ package com.dnastack.wdl4j.util;
 
 import com.dnastack.wdl4j.lib.api.WdlResolver;
 import com.dnastack.wdl4j.lib.exception.WdlResolutionException;
-import com.dnastack.wdl4j.util.UriUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
