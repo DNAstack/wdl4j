@@ -3,6 +3,7 @@ package com.dnastack.wdl4j;
 import com.dnastack.wdl4j.lib.Document;
 import com.dnastack.wdl4j.lib.Import;
 import com.dnastack.wdl4j.lib.LanguageLevel;
+import com.dnastack.wdl4j.lib.Struct;
 import com.dnastack.wdl4j.lib.api.WdlResolver;
 import com.dnastack.wdl4j.lib.exception.NamespaceException;
 import com.dnastack.wdl4j.lib.exception.UnsupportedLanguageLevel;
@@ -23,7 +24,9 @@ import org.openwdl.wdl.parser.WdlV1Parser;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -87,25 +90,45 @@ public class WdlDocumentFactory {
     public Document resolveImports(Document wdl, URI uriContext) throws IOException, NamespaceException {
         List<Import> imports = wdl.getImports();
         if (imports != null && imports.size() > 0) {
-            Map<String, Document> importedDocuments = new HashMap<>();
             for (Import wdlImport : imports) {
                 URI resolvedImportUri = wdlImport.resolveImportUri();
                 if (uriContext != null) {
                     resolvedImportUri = uriContext.resolve(resolvedImportUri);
                 }
                 Document imported = createAndImport(resolvedImportUri);
-                if (!imported.getLanguageLevel().equals(wdl.getLanguageLevel())){
+                if (!imported.getLanguageLevel().equals(wdl.getLanguageLevel())) {
                     throw new UnsupportedLanguageLevel("Parent WDL has a language level of " + wdl.getLanguageLevel() + " however imported document does not");
                 }
-                if (wdlImport.getName() != null) {
-                    importedDocuments.put(wdlImport.getName(), imported);
-                } else {
-                    importedDocuments.put(UriUtils.getImportNamepsaceFromUri(resolvedImportUri), imported);
+
+                wdlImport.setDocument(imported);
+                if (wdlImport.getName() == null) {
+                    wdlImport.setName(UriUtils.getImportNamepsaceFromUri(resolvedImportUri));
                 }
+
+                //Add struct to global parent namespace
+                for (Struct struct : imported.getStructs()) {
+                    String alias = getAliasForStruct(wdlImport.getAliases(), struct);
+                    if (alias != null) {
+                        struct = new Struct(alias, struct.getMembers(), struct.getId());
+                    }
+                    wdl.getStructs().add(struct);
+                }
+
             }
-            wdl.setImportedDocuments(importedDocuments);
+
         }
         return wdl;
+    }
+
+    private String getAliasForStruct(List<Import.ImportAlias> aliases, Struct struct) {
+        if (aliases == null) {
+            return null;
+        }
+        return aliases.stream()
+                      .filter(alias -> alias.getName().equals(struct.getName()))
+                      .map(alias -> alias.getAlias())
+                      .findFirst()
+                      .orElse(null);
     }
 
     public String resolveWdlToString(URI uri, URI context) throws WdlResolutionException {
@@ -185,8 +208,6 @@ public class WdlDocumentFactory {
         WdlDraft2Lexer lexer = new WdlDraft2Lexer(CodePointCharStream.fromBuffer(codePointBuffer));
         return new WdlDraft2Parser(new CommonTokenStream(lexer));
     }
-
-
 
     LanguageLevel detectVersion(String wdl) {
         String[] lines = wdl.split("[\n\r]");

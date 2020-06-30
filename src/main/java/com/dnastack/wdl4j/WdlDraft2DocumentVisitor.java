@@ -9,6 +9,7 @@ import com.dnastack.wdl4j.lib.stdlib.WdlDraft2StandardLib;
 import com.dnastack.wdl4j.lib.typing.*;
 import org.openwdl.wdl.parser.WdlDraft2Parser;
 import org.openwdl.wdl.parser.WdlDraft2ParserBaseVisitor;
+import org.openwdl.wdl.parser.WdlV1Parser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -104,8 +105,14 @@ public class WdlDraft2DocumentVisitor extends WdlDraft2ParserBaseVisitor<WdlElem
             return IntType.getType();
         } else if (ctx.OBJECT() != null) {
             return ObjectType.getType();
+        } else if (ctx.map_type() != null){
+            return visitMap_type(ctx.map_type());
+        } else if (ctx.array_type() != null){
+            return visitArray_type(ctx.array_type());
+        } else if (ctx.pair_type() != null){
+            return visitPair_type(ctx.pair_type());
         } else {
-            return (Type) super.visitType_base(ctx);
+            return null;
         }
     }
 
@@ -133,7 +140,7 @@ public class WdlDraft2DocumentVisitor extends WdlDraft2ParserBaseVisitor<WdlElem
 
     @Override
     public Type visitWdl_type(WdlDraft2Parser.Wdl_typeContext ctx) {
-        Type type = (Type) super.visitWdl_type(ctx);
+        Type type = visitType_base(ctx.type_base());
         if (ctx.OPTIONAL() != null) {
             return OptionalType.getType(type);
         }
@@ -168,7 +175,7 @@ public class WdlDraft2DocumentVisitor extends WdlDraft2ParserBaseVisitor<WdlElem
         if (ctx.IntLiteral() != null) {
             return new IntLiteral(Integer.parseInt(ctx.IntLiteral().getText()), id);
         } else {
-            return new FloatLiteral(Float.parseFloat(ctx.IntLiteral().getText()), id);
+            return new FloatLiteral(Float.parseFloat(ctx.FloatLiteral().getText()), id);
         }
     }
 
@@ -468,10 +475,42 @@ public class WdlDraft2DocumentVisitor extends WdlDraft2ParserBaseVisitor<WdlElem
         return new ArrayLiteral(values, id);
     }
 
+    private Expression visitExpressionCore(WdlDraft2Parser.Expr_coreContext ctx) {
+        if (ctx instanceof WdlDraft2Parser.ApplyContext) {
+            return visitApply((WdlDraft2Parser.ApplyContext) ctx);
+        } else if (ctx instanceof WdlDraft2Parser.Array_literalContext) {
+            return visitArray_literal((WdlDraft2Parser.Array_literalContext) ctx);
+        } else if (ctx instanceof WdlDraft2Parser.Pair_literalContext) {
+            return visitPair_literal((WdlDraft2Parser.Pair_literalContext) ctx);
+        } else if (ctx instanceof WdlDraft2Parser.Map_literalContext) {
+            return visitMap_literal((WdlDraft2Parser.Map_literalContext) ctx);
+        } else if (ctx instanceof WdlDraft2Parser.Object_literalContext) {
+            return visitObject_literal((WdlDraft2Parser.Object_literalContext) ctx);
+        } else if (ctx instanceof WdlDraft2Parser.IfthenelseContext) {
+            return visitIfthenelse((WdlDraft2Parser.IfthenelseContext) ctx);
+        } else if (ctx instanceof WdlDraft2Parser.Expression_groupContext) {
+            return visitExpression_group((WdlDraft2Parser.Expression_groupContext) ctx);
+        } else if (ctx instanceof WdlDraft2Parser.AtContext) {
+            return visitAt((WdlDraft2Parser.AtContext) ctx);
+        } else if (ctx instanceof WdlDraft2Parser.Get_nameContext) {
+            return visitGet_name((WdlDraft2Parser.Get_nameContext) ctx);
+        } else if (ctx instanceof WdlDraft2Parser.NegateContext) {
+            return visitNegate((WdlDraft2Parser.NegateContext) ctx);
+        } else if (ctx instanceof WdlDraft2Parser.UnarysignedContext) {
+            return (Expression) visitUnarysigned((WdlDraft2Parser.UnarysignedContext) ctx);
+        } else if (ctx instanceof WdlDraft2Parser.PrimitivesContext) {
+            return visitPrimitives((WdlDraft2Parser.PrimitivesContext) ctx);
+        } else if (ctx instanceof WdlDraft2Parser.Left_nameContext) {
+            return visitLeft_name((WdlDraft2Parser.Left_nameContext) ctx);
+        } else {
+            return null;
+        }
+    }
+
     @Override
     public Import visitImport_doc(WdlDraft2Parser.Import_docContext ctx) {
         int id = getNextId();
-        String importUrl = ctx.string().getText();
+        String importUrl = ctx.string().string_part().getText();
         String name = null;
         if (ctx.import_as() != null) {
             name = ctx.import_as().Identifier().getText();
@@ -634,7 +673,7 @@ public class WdlDraft2DocumentVisitor extends WdlDraft2ParserBaseVisitor<WdlElem
                 }
             }
         }
-        return Call.newBuilder().taskName(name).callAlias(alias).inputs(inputs).id(id).build();
+        return Call.newBuilder().taskOrWorkflowName(name).callAlias(alias).inputs(inputs).id(id).build();
     }
 
     @Override
@@ -755,6 +794,7 @@ public class WdlDraft2DocumentVisitor extends WdlDraft2ParserBaseVisitor<WdlElem
         document.setId(id);
         document.setLib(new WdlDraft2StandardLib());
         document.setLanguageLevel(LanguageLevel.WDL_DRAFT_2);
+        document.setCoercionOptions(new CoercionOptions(LanguageLevel.WDL_DRAFT_2));
         return document;
     }
 

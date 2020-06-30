@@ -1,7 +1,7 @@
 package com.dnastack.wdl4j;
 
-import com.dnastack.wdl4j.lib.*;
 import com.dnastack.wdl4j.lib.Runtime;
+import com.dnastack.wdl4j.lib.*;
 import com.dnastack.wdl4j.lib.api.WdlElement;
 import com.dnastack.wdl4j.lib.expression.*;
 import com.dnastack.wdl4j.lib.expression.literal.*;
@@ -106,8 +106,14 @@ public class WdlV1DocumentVisitor extends WdlV1ParserBaseVisitor<WdlElement> {
             return StructType.getType(ctx.Identifier().getText());
         } else if (ctx.OBJECT() != null) {
             return ObjectType.getType();
+        } else if (ctx.map_type() != null) {
+            return visitMap_type(ctx.map_type());
+        } else if (ctx.array_type() != null) {
+            return visitArray_type(ctx.array_type());
+        } else if (ctx.pair_type() != null) {
+            return visitPair_type(ctx.pair_type());
         } else {
-            return (Type) super.visitType_base(ctx);
+            return null;
         }
     }
 
@@ -135,7 +141,7 @@ public class WdlV1DocumentVisitor extends WdlV1ParserBaseVisitor<WdlElement> {
 
     @Override
     public Type visitWdl_type(WdlV1Parser.Wdl_typeContext ctx) {
-        Type type = (Type) super.visitWdl_type(ctx);
+        Type type = visitType_base(ctx.type_base());
         if (ctx.OPTIONAL() != null) {
             return OptionalType.getType(type);
         }
@@ -170,7 +176,7 @@ public class WdlV1DocumentVisitor extends WdlV1ParserBaseVisitor<WdlElement> {
         if (ctx.IntLiteral() != null) {
             return new IntLiteral(Integer.parseInt(ctx.IntLiteral().getText()), id);
         } else {
-            return new FloatLiteral(Float.parseFloat(ctx.IntLiteral().getText()), id);
+            return new FloatLiteral(Float.parseFloat(ctx.FloatLiteral().getText()), id);
         }
     }
 
@@ -244,7 +250,15 @@ public class WdlV1DocumentVisitor extends WdlV1ParserBaseVisitor<WdlElement> {
 
     @Override
     public Expression visitExpr(WdlV1Parser.ExprContext ctx) {
-        return (Expression) super.visitExpr(ctx);
+        if (ctx.start.getLine() == 76) {
+            return (Expression) super.visitExpr(ctx);
+        }
+        try {
+            return (Expression) super.visitExpr(ctx);
+        } catch (Exception e) {
+            System.out.println(ctx.stop);
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -404,7 +418,39 @@ public class WdlV1DocumentVisitor extends WdlV1ParserBaseVisitor<WdlElement> {
     @Override
     public IndexedAccessor visitAt(WdlV1Parser.AtContext ctx) {
         int id = getNextId();
-        return new IndexedAccessor((Expression) visitChildren(ctx.expr_core()), visitExpr(ctx.expr()), id);
+        return new IndexedAccessor(visitExpressionCore(ctx.expr_core()), visitExpr(ctx.expr()), id);
+    }
+
+    private Expression visitExpressionCore(WdlV1Parser.Expr_coreContext ctx) {
+        if (ctx instanceof WdlV1Parser.ApplyContext) {
+            return visitApply((WdlV1Parser.ApplyContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.Array_literalContext) {
+            return visitArray_literal((WdlV1Parser.Array_literalContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.Pair_literalContext) {
+            return visitPair_literal((WdlV1Parser.Pair_literalContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.Map_literalContext) {
+            return visitMap_literal((WdlV1Parser.Map_literalContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.Object_literalContext) {
+            return visitObject_literal((WdlV1Parser.Object_literalContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.IfthenelseContext) {
+            return visitIfthenelse((WdlV1Parser.IfthenelseContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.Expression_groupContext) {
+            return visitExpression_group((WdlV1Parser.Expression_groupContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.AtContext) {
+            return visitAt((WdlV1Parser.AtContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.Get_nameContext) {
+            return visitGet_name((WdlV1Parser.Get_nameContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.NegateContext) {
+            return visitNegate((WdlV1Parser.NegateContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.UnarysignedContext) {
+            return (Expression) visitUnarysigned((WdlV1Parser.UnarysignedContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.PrimitivesContext) {
+            return visitPrimitives((WdlV1Parser.PrimitivesContext) ctx);
+        } else if (ctx instanceof WdlV1Parser.Left_nameContext) {
+            return visitLeft_name((WdlV1Parser.Left_nameContext) ctx);
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -443,7 +489,7 @@ public class WdlV1DocumentVisitor extends WdlV1ParserBaseVisitor<WdlElement> {
     @Override
     public DotAccessor visitGet_name(WdlV1Parser.Get_nameContext ctx) {
         int id = getNextId();
-        return new DotAccessor((Expression) visitChildren(ctx.expr_core()), ctx.Identifier().getText(), id);
+        return new DotAccessor(visitExpressionCore(ctx.expr_core()), ctx.Identifier().getText(), id);
     }
 
     @Override
@@ -487,7 +533,7 @@ public class WdlV1DocumentVisitor extends WdlV1ParserBaseVisitor<WdlElement> {
     @Override
     public Import visitImport_doc(WdlV1Parser.Import_docContext ctx) {
         int id = getNextId();
-        String importUrl = ctx.string().getText();
+        String importUrl = ctx.string().string_part().getText();
         String name = null;
         if (ctx.import_as() != null) {
             name = ctx.import_as().Identifier().getText();
@@ -710,7 +756,7 @@ public class WdlV1DocumentVisitor extends WdlV1ParserBaseVisitor<WdlElement> {
                 }
             }
         }
-        return Call.newBuilder().taskName(name).callAlias(alias).inputs(inputs).id(id).build();
+        return Call.newBuilder().taskOrWorkflowName(name).callAlias(alias).inputs(inputs).id(id).build();
     }
 
     @Override
@@ -865,6 +911,7 @@ public class WdlV1DocumentVisitor extends WdlV1ParserBaseVisitor<WdlElement> {
         document.setId(id);
         document.setLib(new WdlV1StandardLib());
         document.setLanguageLevel(LanguageLevel.WDL_V1);
+        document.setCoercionOptions(new CoercionOptions(LanguageLevel.WDL_V1));
         return document;
     }
 }
