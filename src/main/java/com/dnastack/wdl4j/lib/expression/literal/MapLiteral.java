@@ -72,7 +72,7 @@ public class MapLiteral extends Expression {
                 throw new TypeCoercionException("Illegal type coercion. Cannot coerce type " + expressionKeyType.getTypeName() + " to " + targetKeyType
                         .getTypeName());
 
-            } else if (!targetValueType.isCoercibleTo(namespace.getCoercionOptions(), expressionValueType)) {
+            } else if (!expressionValueType.isCoercibleTo(namespace.getCoercionOptions(), targetValueType)) {
                 throw new TypeCoercionException("Illegal type coercion. Cannot coerce type " + expressionValueType.getTypeName() + " to " + targetValueType
                         .getTypeName());
 
