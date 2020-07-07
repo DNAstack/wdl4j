@@ -246,10 +246,13 @@ public class WdlV1DocumentVisitor extends WdlV1ParserBaseVisitor<WdlElement> {
         int id = getNextId();
         Expression expression = null;
 
+
         if (ctx.number() != null) {
             expression = visitNumber(ctx.number());
         } else if (ctx.string() != null) {
             expression = visitString(ctx.string());
+        } else if (ctx.Identifier() != null){
+            expression = new VariableReference(ctx.Identifier().getText(),getNextId());
         }
 
         if (ctx.DEFAULT() != null) {

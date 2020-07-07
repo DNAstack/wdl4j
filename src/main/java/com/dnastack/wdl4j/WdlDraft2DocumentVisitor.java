@@ -219,6 +219,8 @@ public class WdlDraft2DocumentVisitor extends WdlDraft2ParserBaseVisitor<WdlElem
             expression = visitNumber(ctx.number());
         } else if (ctx.string() != null) {
             expression = visitString(ctx.string());
+        } else if (ctx.Identifier() != null){
+            expression = new VariableReference(ctx.Identifier().getText(),getNextId());
         }
 
         if (ctx.DEFAULT() != null) {
