@@ -17,6 +17,7 @@
         <antlr4test-maven-plugin.version>1.11</antlr4test-maven-plugin.version>
         <junit.jupiter.version>5.5.2</junit.jupiter.version>
         <surefire.version>2.22.0</surefire.version>
+        <assertj.version>3.16.1</assertj.version>
         <!-- location of java sources -->
     </properties>
 
@@ -50,6 +51,12 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
