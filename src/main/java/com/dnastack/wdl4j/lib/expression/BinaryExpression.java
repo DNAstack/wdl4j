@@ -55,11 +55,11 @@ public class BinaryExpression extends Expression {
     private Type typeCheckBoolean(CoercionOptions options, Type lhs, Type rhs) throws TypeCoercionException {
         Type booleanType = BooleanType.getType();
         if (!lhs.isCoercibleTo(options, booleanType)) {
-            throw new TypeCoercionException("Illegal Type coercion. Left hand side of binary operation " + operation.name() + "cannot be cast to a boolean type");
+            throw new TypeCoercionException("Illegal Type coercion. Left hand side of binary operation " + operation.name() + " cannot be cast to a boolean type");
         }
 
         if (!rhs.isCoercibleTo(options, booleanType)) {
-            throw new TypeCoercionException("Illegal Type coercion. Left hand side of binary operation " + operation.name() + "cannot be cast to a boolean type");
+            throw new TypeCoercionException("Illegal Type coercion. Left hand side of binary operation " + operation.name() + " cannot be cast to a boolean type");
         }
 
         return booleanType;
@@ -129,8 +129,11 @@ public class BinaryExpression extends Expression {
             } else {
                 throw new TypeCoercionException("Illegal Type Coercion. Left hand side of " + operation.name() + " cannot be cast to a string type");
             }
-        } else {
+        } else if (operation.equals(BinaryOperation.ADD)){
             return typeCheckNumericOrString(namespace.getCoercionOptions(), leftHandType, rightHandType);
+        } else {
+            typeCheckNumericOrString(namespace.getCoercionOptions(), leftHandType, rightHandType);
+            return BooleanType.getType();
         }
 
     }
